@@ -8,6 +8,7 @@
   <title>YogaChat</title>
 </head>
 <body>
+  
   <header class="header">
     <div class="container">
       <div class="header__inner">
@@ -21,7 +22,13 @@
       </div>
     </div>
   </header>
+
   <main class="main">
+    <div class="section-top">
+      <button class="btn-icon-users" title="Users list" onclick="myFunction()"><span class="iconify" data-icon="carbon:user-avatar" data-inline="false"></span></button>
+      <button class="btn-icon-filter" title="Filter"><span class="iconify" data-icon="mi:filter" data-inline="false"></span></button>
+    </div>
+    
     <div class="container">
       <div class="section-left">
         <form class="main__filter" action="" >
@@ -34,7 +41,7 @@
           <input class="main__filter-date btn-filter" type="date" name="toDate">
           <button class="btn-filter btn" type="submit">Filter</button>
         </form>
-        <div class="users-list__main">
+        <div class="users-list__main" id="users-list__main">
           <h3 class="users-list__name">All  users</h3>
           <div class="users-list__content">
              <div class="user-info">
@@ -190,18 +197,18 @@
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore.
               </div>
             </div>
-            <div class="message-send">
-              <input class="message-send__input" type="text" placeholder="Write a message...">
-              <button class="message-send__icon">
-                <span class="iconify" data-icon="ic-round-send" data-inline="false"></span>
-              </button>
-            </div>
           </div>
-            
+          <div class="message-send">
+            <input class="message-send__input" type="text" placeholder="Write a message...">
+            <button class="message-send__icon">
+              <span class="iconify" data-icon="ic-round-send" data-inline="false"></span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
   </main>
+
   <footer class="footer">
     <div class="container">
       <div class="footer__inner">
@@ -216,6 +223,8 @@
       </div>
     </div>
   </footer>
+
   <script src="https://code.iconify.design/1/1.0.7/iconify.min.js"></script>
+  <script src="./script.js"></script>
 </body>
 </html>
