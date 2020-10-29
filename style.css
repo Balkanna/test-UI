@@ -21,7 +21,7 @@
 }
 
 html {
-  font-size: .875rem;
+  font-size: .87rem;
   color: #333;
 }
 
@@ -147,7 +147,7 @@ ul {
   height: 25px;
   border: 1px solid var(--blue-color);
   border-radius: var(--border-radius);
-  margin: 3px 0;
+  margin: 3px 2px;
 }
 
 .main__filter {
@@ -195,10 +195,11 @@ ul {
   padding: 0 10px 5px 10px;
 }
 
-/*.messages-block {
+.messages-block {
+  padding: 0 1rem;
   overflow-y: auto;
-  height: calc(100% - 125px);
-}*/
+  height: 43rem;
+}
 
 .message__text {
   padding: .5rem;
@@ -304,7 +305,6 @@ ul {
 .user-message__change {
   display: flex;
   justify-content: space-between;
-  width: 3rem;
 } 
 
 .btn-edit,
@@ -329,14 +329,13 @@ ul {
 }
 
 .message-send {
-  position: fixed;
-  bottom: 7%;
+  //position: fixed;
+  //bottom: 7%;
 }
 
 .message-send__input {
-  //position: fixed;
   bottom: 50px;
-  width: 45%;
+  width: 100%;
   border: 1px solid var(--blue-color);
   box-sizing: border-box;
   border-radius: .7rem;
@@ -357,9 +356,9 @@ ul {
 }
 
 .message-send__icon {
-  //position: fixed;
-  bottom: 10.5%;
-  right: 19%;
+  position: absolute;
+  //bottom: 10.5%;
+  right: 15%;
   background-color: transparent;
   border: 0;
 }
@@ -393,12 +392,12 @@ ul {
 }
 
 /*Scroll customize*/
-.dialog-info::-webkit-scrollbar, .messages-block::-webkit-scrollbar {
-  width: 1.4rem;
-  height: 1.4rem;
+.messages-block::-webkit-scrollbar {
+  width: .3rem;
+  height: .3rem;
 }
 
-.dialog-info::-webkit-scrollbar-track, .messages-block::-webkit-scrollbar-track {
+.messages-block::-webkit-scrollbar-track {
   background-color: #d3d3d3;
 }
 
@@ -406,7 +405,7 @@ ul {
   background-color: #d3d3d3;
 }
 
-.dialog-info::-webkit-scrollbar-thumb, .messages-block::-webkit-scrollbar-thumb {
+.messages-block::-webkit-scrollbar-thumb {
   background-color: #acacac;
   border-radius: 2.1rem;
 }
@@ -415,6 +414,10 @@ ul {
   
   .user-message__change {
     width: 5rem;
+  }
+
+  .message-send__icon {
+    right: 10%;
   }
 }
 
@@ -474,15 +477,24 @@ ul {
   }
 
   .user-message__change {
-    width: 3rem;
+    //width: 3rem;
   }
 
   .message-send {
     bottom: 9%;
   }
 
+  .message-send__icon {
+    bottom: 11%;
+    right: 6%;
+  }
+
   .message-send input[placeholder] {
     padding: 14px;
+  }
+
+  .messages-block {
+    height: 38rem;
   }
 
   .footer__inner {
