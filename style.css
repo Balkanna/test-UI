@@ -328,11 +328,6 @@ ul {
   transform: scale(1.1);
 }
 
-.message-send {
-  //position: fixed;
-  //bottom: 7%;
-}
-
 .message-send__input {
   bottom: 50px;
   width: 100%;
@@ -357,7 +352,6 @@ ul {
 
 .message-send__icon {
   position: absolute;
-  //bottom: 10.5%;
   right: 15%;
   background-color: transparent;
   border: 0;
@@ -468,16 +462,8 @@ ul {
     display: none;
   }
 
-  .main__filter {
-    //display: none;
-  }
-
   .users-list__main {
     display: none;
-  }
-
-  .user-message__change {
-    //width: 3rem;
   }
 
   .message-send {
