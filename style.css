@@ -98,7 +98,7 @@ ul {
 }
 
 .btn:hover {
-  transform: scale(1.2);
+  transform: scale(1.1);
   box-shadow: var(--shadow-hover);
 }
 
@@ -126,11 +126,11 @@ ul {
 }
 
 .btn-icon-users {
-  left: 9%;
+  left: 5%;
 }
 
 .btn-icon-filter {
-  right: 9%;
+  right: 5%;
 }
 
 .btn-icon-users .iconify,
@@ -232,6 +232,7 @@ ul {
 }
 
 .users-list__main {
+  display: block;
   height: 100%;
   background: rgba(196, 196, 196, 0.4);
 }
@@ -272,7 +273,7 @@ ul {
 
 .btn-add-messages {
   position: relative;
-  left: 50%;
+  left: 40%;
 }
 
 .message-chat__info {
@@ -321,12 +322,19 @@ ul {
 }
 
 .btn-edit:hover,
-.btn-delete:hover {
-  transform: scale(1.2);
+.btn-delete:hover,
+.btn-icon-users:hover,
+.btn-icon-filter:hover {
+  transform: scale(1.1);
+}
+
+.message-send {
+  position: fixed;
+  bottom: 7%;
 }
 
 .message-send__input {
-  position: fixed;
+  //position: fixed;
   bottom: 50px;
   width: 45%;
   border: 1px solid var(--blue-color);
@@ -349,7 +357,7 @@ ul {
 }
 
 .message-send__icon {
-  position: fixed;
+  //position: fixed;
   bottom: 10.5%;
   right: 19%;
   background-color: transparent;
@@ -440,15 +448,16 @@ ul {
   }
   
   .section-top {
-    display: block;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 40px;
     height: 45px;
     background: #89EFBF;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   }
 
   .btn-icon-users,
-  .btn-icon-filter,
-  .users-list__main {
+  .btn-icon-filter {
     display: block;
   }
 
@@ -456,8 +465,24 @@ ul {
     display: none;
   }
 
+  .main__filter {
+    //display: none;
+  }
+
+  .users-list__main {
+    display: none;
+  }
+
   .user-message__change {
     width: 3rem;
+  }
+
+  .message-send {
+    bottom: 9%;
+  }
+
+  .message-send input[placeholder] {
+    padding: 14px;
   }
 
   .footer__inner {
