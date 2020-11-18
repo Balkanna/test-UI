@@ -1,17 +1,12 @@
-//let curAuthor = 'Anna';
-
 class Message {
+
   constructor(id, createdAt, author, text, to, isPersonal) {
-    this._id = id /*this.generateId()*/,
-    this._createdAt = createdAt /*new Date()*/,
+    this._id = id,
+    this._createdAt = createdAt ,
     this._author = author,
     this._text = text,
     this._to = to,
     this._isPersonal = isPersonal
-  }
-
-  generateId(){
-    return Math.random().toString(36).substr(2, 10);
   }
 
   get id() {    
@@ -65,7 +60,6 @@ class MessageList {
   constructor(messages = []) {
     this._messages = messages;
     this._user = 'Anna';
-    //user here or get/set !
   }
 
   get user() {
@@ -80,26 +74,23 @@ class MessageList {
     return this._messages.find(item => item.id === id);
   };
 
-  getFilterObj() {
-    return {
+  getPage(skip = 0, top = 10, filterConfig = {}) {
+    
+    const filterObj = {
       text: (item, text) => text && item.text.toLowerCase().includes(text.toLowerCase()),
       author: (item, author) => author && item.author.toLowerCase().includes(author.toLowerCase()),
       dateTo: (item, dateTo) => dateTo && item.createdAt < dateTo,
       dateFrom: (item, dateFrom) => dateFrom && item.createdAt > dateFrom
     }
-  };
 
-  getPage(skip = 0, top = 10, filterConfig = {}) {
     let result = this._messages.slice().filter(item => {
       return (item.author === this._user || ((item.isPersonal === true && item.to === this._user) || item.isPersonal === false));
     });
-    const messageFilter = this.getFilterObj();
-    // Filtering
+  
     Object.keys(filterConfig).forEach(key => {
-      result = result.filter(item => messageFilter[key](item, filterConfig[key]));
+      result = result.filter(item => filterObj[key](item, filterConfig[key]));
     });
 
-    // Sorting
     result = result.sort((a, b) => {
       return a.createdAt - b.createdAt;
     }); 
@@ -108,30 +99,25 @@ class MessageList {
     //TODO: validate user
   };
 
-  getValidateObj() {
-    return {
-      id: (item) => item.id && typeof item.id === "string",
-      text: (item) => item.text && typeof item.text === "string" && item.text.length <= 200,
-      author: (item) => item.author && typeof item.author === "string",
-      createdAt: (item) => item.createdAt
-    };
-  }
-
   add(msg) {
-    if (this.validate(msg)) {
-      //TODO
-      /*msg._id = `${+new Date()}`;
-      msg._author = author;
-      msg._createdAt = new Date();
-      msg.author = this._user;*/
-      this._messages.push(msg);
+
+    if (MessageList.validate(msg) && this._user === msg.author) {
+      const {text, to, isPersonal} = msg;
+      const id = Math.random().toString(36).substr(2, 10);
+      const createdAt = new Date();
+      const author = this._user;
+      const newMessage = new Message(id, createdAt, author, text, to, isPersonal);
+      this._messages.push(newMessage);
       return true; 
     }
     return false; 
   };
 
-  validate(msg){
-    const messageValidator = this.getValidateObj();
+  static validate(msg){
+
+    const validateObj = {
+      text: (msg) => msg.text && typeof msg.text === "string" && msg.text.length <= 200,
+    }
 
     if (msg.isPersonal) {
       if (typeof msg.isPersonal !== 'boolean' || (msg.isPersonal && !(msg.to && typeof msg.to === 'string' && msg.to.length > 0))) {
@@ -139,59 +125,48 @@ class MessageList {
       }
     }
 
-    return Object.keys(messageValidator).every(key => messageValidator[key](msg));  
+    return Object.keys(validateObj).every(key => validateObj[key](msg));  
     
     //TODO нужно проверить, если isPersonal === true, что поле to тоже заполнено
   };
 
   edit(id, msg) {
+
     const editObj = {
       text: (item, text) => text ? item.text = text : item.text,
       to: (item, to) => to ? item.to = to : item,
     };
 
-    const msgIndex = this._messages.findIndex((msg) => msg._id === id);
+    const msgIndex = this._messages.findIndex((msg) => msg.id === id);
     const copyObj = Object.assign({}, this._messages[msgIndex]);
 
     Object.keys(editObj).forEach(key => editObj[key](copyObj, msg[key]));
     
-    if (this.validate(copyObj)) {
-      //TODO USER VALIDATE
-      this._messages[msgIndex] = copyObj;
+    if (msgIndex !== -1 && this._messages[msgIndex].author === this._user) {
+      if (MessageList.validate(copyObj)) {
+        this._messages[msgIndex] = copyObj;
+        return true;
+      }
+    }
+    return false;
+  };
+
+  remove(id) {
+
+    let index = this._messages.findIndex(item => item.id === id);
+
+    if (this._messages[index].author === this._user && index !== -1 ) {
+      this._messages.splice(index, 1);
       return true;
     }
     return false;
-  };
-
-  /*edit(id, msg) {
-    let editedItem = this._messages.find(item => {
-      return item.id === id;
-    });
-
-    if (this.validate(msg) && editedItem.author === this._user) {
-      Object.keys(msg).forEach(key=>{
-        editedItem[key] = msg[key];
-        return editedItem;
-      });
-      return editedItem;
-    }
-    return false;
-  }*/
-
-  remove(id) {
-    //TODO USER VALIDATE
-    const index = this._messages.findIndex(item => item.id === id);
-    if (index === -1) {
-      return false;
-    }
-    this._messages.splice(index, 1);
-    return true;
-  };
+  } 
 
   addAll(messages) {
+
     let invalidMessages = [];
     messages.forEach(msg => {
-      if (this.validate(msg)) {
+      if (MessageList.validate(msg)) {
         this._messages.push(msg);
       }
       else {
@@ -230,7 +205,7 @@ const messages = [
   },
   {
     id: '4',
-    text: 'Lorem lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
     createdAt: new Date('2020-10-12T20:01:00'),
     author: 'Elon',
     isPersonal: false
@@ -265,7 +240,7 @@ const messages = [
   },
   {
     id: '9',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    text: 'Lorem lorem ipsum dolor sit amet, consectetur adipiscing elit.',
     createdAt: new Date('2020-10-12T20:07:03'),
     author: 'Tom',
     isPersonal: false
@@ -360,49 +335,61 @@ console.log('Msgs collections: ', messageList);
 
 console.log('Get message id = 3: ', messageList.get('3'));
 
-console.log('Get messages: ', messageList.getPage(0,10));
+console.log('Get 10 messages: ', messageList.getPage(0,10));
+console.log('Get 20 messages: ', messageList.getPage(0,20));
 
 console.log('Get messages of users with name "Tom": ', messageList.getPage(0, 10, {author: 'Tom'}));
-console.log('Get messages of users with "Elon" substr in author and "Lorem lorem" in text: ', messageList.getPage(0, 20, {
-	author: 'Elon',
+console.log('Get messages of users with "Tom" substr in author and "Lorem lorem" in text: ', messageList.getPage(0, 20, {
+	author: 'Tom',
   text: 'Lorem lorem',
-  dateFrom: new Date('2020-10-12T20:01:00'),
-  dateTo: new Date('2020-10-12T20:01:00')
+  //dateFrom: new Date('2020-10-12T20:01:00'),
+  //dateTo: new Date('2020-10-12T20:01:00')
 }));
 
-const message1 = {
-  id: '21',
+console.log('Add the message, where author = user: ', messageList.add(newMessage = {
   text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-  createdAt: new Date('2020-10-12T20:00:00'),
   author: 'Anna',
-  isPersonal: false
-};
-messageList.add(message1);
-console.log( 'Msgs collections after adding the valid message: ', messageList);
-console.log('Msg example: ', message1);
+  isPersonal: true,
+  to: 'Alice'
+}));
+console.log('Msg example, where author = user: ', newMessage);
+console.log('Msgs collections after adding the valid message, where author = user: ', messageList);
 
-const message2 = {
-  id: '22',
+console.log('Add the message, where author != user: ',messageList.add(newMessage = {
+  text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+  author: 'Elon',
+  isPersonal: true,
+  to: 'Max'
+}));
+console.log('Msg example, where author != user: ', newMessage);
+console.log('Msgs collections after adding the valid message, where author != user: ', messageList);
+
+console.log('Msg example, where text > 200 words: ', message = {
   text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
   createdAt: new Date('2020-10-12T20:00:00'),
   author: 'Tom',
   isPersonal: false
-};
-console.log(messageList.add(message2));
-console.log('Msg example: ', message2);
+});
+console.log('Add the invalid message (>200 words): ', messageList.add(message = {
+  text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+  createdAt: new Date('2020-10-12T20:00:00'),
+  author: 'Tom',
+  isPersonal: false
+}));
 console.log('Msgs collections after adding the invalid message (>200 words): ', messageList);
-//console.log(invalidMessages);
 
+console.log('Check valid message:', MessageList.validate(newMessage));
+console.log('Check invalid message:', MessageList.validate(message));
+console.log('Edit message, where author = user:', messageList.edit('15', {text:'I changed!'}));
+console.log('Edit message, where author != user:', messageList.edit('4', {text:'Hello World!'}));
+console.log('Msgs collections after editing: ', messageList);
 
-console.log('Check valid message:', messageList.validate(message1));
-console.log('Check invalid message:', messageList.validate(message2));
-/*messageList.edit('21', {text:'Hello!'});
-console.log('Msgs collections after edit: ', messageList);*/
+console.log('Remove message id = 1, where author != user:', messageList.remove('1'));
+console.log('Remove message id = 3, where author = user:', messageList.remove('3'));
+console.log('Msgs collections after removing: ', messageList);
 
-console.log('Remove message id = 1:', messageList.remove('1'));
-console.log('Msgs collections after remove: ', messageList);
-
-/*console.log('Add all:', messageList.addAll(messages));*/
+console.log('Add all:', messageList.addAll(messages));
+console.log('Msgs collections: ', messageList);
 /*messageList.addAll([new Message('bla-bla', {
   text: 'Всем привет.',
   isPersonal: false
