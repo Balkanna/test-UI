@@ -1,11 +1,11 @@
 ﻿class Message {
   constructor(id, createdAt, author, text, isPersonal, to) {
-    this._id = id,
-    this._createdAt = createdAt,
-    this._author = author,
-    this._text = text,
-    this._to = to,
-    this._isPersonal = isPersonal
+    this._id = id;
+    this._createdAt = createdAt;
+    this._author = author;
+    this._text = text;
+    this._to = to;
+    this._isPersonal = isPersonal;
   }
 
   get id() {    
@@ -26,6 +26,10 @@
 
   set text(value) {
     this._text = value.slice(0, 200);  
+  }
+
+  get text() {
+    return this._text;
   }
 
   get author() {
@@ -71,6 +75,10 @@ class MessageList {
   get messages() {
     return this._messages;
   }
+
+  set messages(value) {
+    this._messages = value;
+  }
   //TODO set user
    
   get(id) {
@@ -104,7 +112,7 @@ class MessageList {
 
   add(msg) {
     const newMsg = new Message(Math.random().toString(36).substr(2, 10), new Date(), this.user, msg.text, msg.isPersonal, msg.to);
-    if (MessageList.validate(newMsg)) {
+    if (MessageList.validate(newMsg) && msg.author === this.user) {
       this._messages.push(newMsg);
       return true; 
     }
