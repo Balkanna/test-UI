@@ -61,7 +61,7 @@
 class MessageList {
   constructor(messages = []) {
     this._messages = messages;
-    this._user = 'Anna';
+    this._user = null;
   }
 
   get user() {
@@ -221,14 +221,16 @@ class ActiveUsersView {
   }
 
   display(activeUsers) {
-    const activeUsersList = document.getElementById(this.id);
-    const innerHTML = activeUsers.map(item => (
-      `<div class="user-info">
-        <div class="circle"></div>
-        <span class="user-name">Alex</span>
-        <span class="user-status">online</span> 
-      </div>`)).join(`\n`); // online?
-    activeUsersList.innerHTML = innerHTML;
+    const activeUsersListContainer = document.getElementById(this.id);
+    const innerHTML = activeUsers.map( user => (`
+        <div class="user-info">
+          <div class="circle"></div>
+          <span class="user-name">${user}</span>
+          <span class="user-status">online</span> 
+        </div>
+      `)).join(`\n`); // online?
+
+    activeUsersListContainer.innerHTML = innerHTML;
   }
 }
 
@@ -237,9 +239,9 @@ class MessagesView {
     this.id = id;
   }
 
-  display(messages) {
+  display(msgsArray) {
     const messagesList = document.getElementById(this.id); //_
-    messagesList.innerHTML = messages.map( msg => {
+    messagesList.innerHTML = msgsArray.map( msg => {
       let date = msg.createdAt.toLocaleDateString();
       let time = msg.createdAt.toLocaleTimeString().slice(0, -3);
 
@@ -251,11 +253,12 @@ class MessagesView {
               <div class="message__time">${time}</div>
               <div class="message__date">${date}</div>
             </div>
-            <div class="message__text">${msg.text}</div>
+            <div class="message__container">
+              <div class="message__text">${msg.text}</div>
+            </div>
           </div>
         `)
       }
-
       else {
         return (`
           <div class="message-chat">
@@ -264,11 +267,13 @@ class MessagesView {
               <div class="message__time">${time}</div>
               <div class="message__date">${date}</div>
             </div>
-            <div class="message__text user-message">${msg.text}</div>
-          </div>
-          <div class="user-message__change">
-            <button class="btn-edit" title="Edit"><span class="iconify" data-icon="ic-baseline-edit" data-inline="false"></span></button>
-            <button class="btn-delete" title="Delete"><span class="iconify" data-icon="ic-baseline-delete-outline" data-inline="false"></span></button>
+            <div class="message__container user-message">
+              <div class="message__text">${msg.text}</div>
+              <div class="user-message__change">
+                <button class="btn-edit" title="Edit"><span class="iconify" data-icon="ic-baseline-edit" data-inline="false"></span></button>
+                <button class="btn-delete" title="Delete"><span class="iconify" data-icon="ic-baseline-delete-outline" data-inline="false"></span></button>
+              </div>
+            </div>
           </div>
         `)
       }
@@ -305,48 +310,180 @@ function editMessage(id, msg) {
   return messagesView.display(messageList.getPage());
 }
 
-const messages = [
-  new Message('1', new Date('2020-10-12T20:00:00'), 'Tom','Lorem ipsum dolor sit amet, consectetur adipiscing elit.', false),
-  new Message('2', new Date('2020-10-12T20:00:05'), 'Tom', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.', false),
-  new Message('3', new Date('2020-10-12T20:00:07'), 'Anna', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.', false),
-  new Message('4', new Date('2020-10-12T20:01:00'), 'Elon', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.', false),
-  new Message('5', new Date('2020-10-12T20:01:08'), 'Tom', 'Lorem lorem ipsum dolor sit amet, consectetur adipiscing elit.', false),
-  new Message('6', new Date('2020-10-12T20:02:00'), 'Anna', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.', false),
-  new Message('7', new Date('2020-10-12T20:05:00'), 'Tom', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.', false),
-  new Message('8', new Date('2020-10-12T20:05:02'), 'Alice','Lorem ipsum dolor sit amet, consectetur adipiscing elit.', false),
-  new Message('9', new Date('2020-10-12T20:07:03'), 'Tom','Lorem ipsum dolor sit amet, consectetur adipiscing elit.', false),
-  new Message('10', new Date('2020-10-12T21:00:00'), 'Anna','Lorem ipsum dolor sit amet, consectetur adipiscing elit.', false),
-  new Message('11', new Date('2020-10-12T21:05:00'), 'Elon','Lorem ipsum dolor sit amet, consectetur adipiscing elit.', false),
-  new Message('12', new Date('2020-10-12T21:05:10'), 'Maxim','Lorem ipsum dolor sit amet, consectetur adipiscing elit.', false),
-  new Message('13', new Date('2020-10-12T21:06:00'), 'Anna','Lorem ipsum dolor sit amet, consectetur adipiscing elit.', true, 'Alice'),
-  new Message('14', new Date('2020-10-12T21:07:01'), 'Anna','Lorem ipsum dolor sit amet, consectetur adipiscing elit.', true, 'Alice'),
-  new Message('15', new Date('2020-10-12T22:04:09'), 'Anna','Lorem ipsum dolor sit amet, consectetur adipiscing elit.', true, 'Alice'),
-  new Message('16', new Date('2020-10-12T22:05:00'), 'Anna','Lorem ipsum dolor sit amet, consectetur adipiscing elit.', true, 'Tom'),
-  new Message('17', new Date('2020-10-12T22:08:07'), 'Maxim','Lorem ipsum dolor sit amet, consectetur adipiscing elit.', false),
-   //invalid message
-  new Message('18', new Date('2020-10-12T22:09:00'), 'Anna','Lorem ipsum dolor sit amet, consectetur adipiscing elit.', true),
-  new Message('19', new Date('2020-10-12T22:09:03'), 'Elon','Lorem ipsum dolor sit amet, consectetur adipiscing elit.', false),
-  new Message('20', new Date('2020-10-12T22:09:07'), 'Alexander','Lorem ipsum dolor sit amet, consectetur adipiscing elit.', false)
-]
-const messageList = new MessageList(messages);
-const userList = new UserList(['Dima', 'Zhenya Zh.', 'Sasha', 'Pasha'], ['Dima', 'Zhenya']);
+const messageList = new MessageList([
+  {
+    id: '1',
+    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    createdAt: new Date('2020-10-12T20:00:00'),
+    author: 'Tom',
+    isPersonal: false,
+  },
+  {
+    id: '2',
+    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    createdAt: new Date('2020-10-12T20:00:05'),
+    author: 'Tom',
+    isPersonal: false,
+  },
+  {
+    id: '3',
+    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    createdAt: new Date('2020-10-12T20:00:07'),
+    author: 'Anna',
+    isPersonal: false,
+  },
+  {
+    id: '4',
+    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    createdAt: new Date('2020-10-12T20:01:00'),
+    author: 'Elon',
+    isPersonal: false,
+  },
+  {
+    id: '5',
+    text: 'Lorem lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    createdAt: new Date('2020-10-12T20:01:08'),
+    author: 'Tom',
+    isPersonal: false,
+  },
+  {
+    id: '6',
+    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    createdAt: new Date('2020-10-12T20:02:00'),
+    author: 'Anna',
+    isPersonal: false,
+  },
+  {
+    id: '7',
+    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    createdAt: new Date('2020-10-12T20:05:00'),
+    author: 'Tom',
+    isPersonal: false,
+  },
+  {
+    id: '8',
+    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    createdAt: new Date('2020-10-12T20:05:02'),
+    author: 'Alice',
+    isPersonal: false,
+  },
+  {
+    id: '9',
+    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    createdAt: new Date('2020-10-12T20:07:03'),
+    author: 'Tom',
+    isPersonal: false,
+  },
+  {
+    id: '10',
+    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    createdAt: new Date('2020-10-12T21:00:00'),
+    author: 'Anna',
+    isPersonal: false,
+  },
+  {
+    id: '11',
+    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    createdAt: new Date('2020-10-12T21:05:00'),
+    author: 'Elon',
+    isPersonal: false,
+  },
+  {
+    id: '12',
+    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    createdAt: new Date('2020-10-12T21:05:10'),
+    author: 'Max',
+    isPersonal: false,
+  },
+  {
+    id: '13',
+    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    createdAt: new Date('2020-10-12T21:06:00'),
+    author: 'Anna',
+    isPersonal: true,
+    to: 'Alice',
+  },
+  {
+    id: '14',
+    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    createdAt: new Date('2020-10-12T21:07:01'),
+    author: 'Tom',
+    isPersonal: false,
+  },
+  {
+    id: '15',
+    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    createdAt: new Date('2020-10-12T22:04:09'),
+    author: 'Alexander',
+    isPersonal: true,
+    to: 'Alice',
+  },
+  {
+    id: '16',
+    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    createdAt: new Date('2020-10-12T22:05:00'),
+    author: 'Anna',
+    isPersonal: true,
+    to: 'Tom',
+  },
+  {
+    id: '17',
+    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    createdAt: new Date('2020-10-12T22:08:07'),
+    author: 'Max',
+    isPersonal: false,
+  },
+  //invalid message
+  {
+    id: '18',
+    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    createdAt: new Date('2020-10-12T22:09:00'),
+    author: 'Anna',
+    isPersonal: true,
+  },
+  {
+    id: '19',
+    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    createdAt: new Date('2020-10-12T22:09:03'),
+    author: 'Anna',
+    isPersonal: false,
+  },
+  {
+    id: '20',
+    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    createdAt: new Date('2020-10-12T22:09:07'),
+    author: 'Anna',
+    isPersonal: false,
+  }
+  ]); 
+
+const userList = new UserList(['Alexander', 'Alice', 'Elon', 'Max','Tom', 'Natasha'], ['Alexander', 'Alice', 'Elon', 'Max','Tom']);
 const activeUsersView = new ActiveUsersView('users-list__content');
 const headerView = new HeaderView('name-authorization');
 const messagesView = new MessagesView('messages-block');
 
-setCurrentUser('Mike');
+setCurrentUser('Anna');
 
 showActiveUsers();
 
-//const chatMessagesView = new ChatMessagesView('chats-list');
+showMessages(0, 10);
 
-/*const messageList = new MessageList(messages);
-console.log('Msgs collections: ', messageList);
+editMessage('19', {text: 'Hello! I have already changed the text of this message !'});
+
+removeMessage('20');
+
+addMessage(new Message(Math.random().toString(36).substr(2, 10), new Date(), 'Anna','Hello! I have already added the new message! Wow)', false));
+
+
+/*addMessage('Hello! I have already changed!', 'Anna');*/
+
+
+//const messageList = new MessageList(messages);
+/*console.log('Msgs collections: ', messageList);
 
 console.log('Get message id = 3: ', messageList.get('3'));
 console.log('Get messages (default): ', messageList.getPage());
 console.log('Get 10 messages: ', messageList.getPage(0,10));
-console.log('Get 10 messages: ', messageList.getPage(10,10));
 console.log('Get messages of users with name "Tom": ', messageList.getPage(0, 10, {author: 'Tom'}));
 console.log('Get messages of users with "Tom" substr in author and "Lorem lorem" in text: ', messageList.getPage(0, 20, {
 	author: 'Tom',
@@ -358,6 +495,7 @@ console.log('Get messages of users (date): ', messageList.getPage(0, 20, {
 }));
 
 console.log('Add the message, where author = user: ', messageList.add(new Message(Math.random().toString(36).substr(2, 10), new Date(), 'Anna','Hi Alice', true, 'Alice')));
+console.log('Example: ', new Message(Math.random().toString(36).substr(2, 10), new Date(), 'Anna','Hi Alice', true, 'Alice'));
 console.log('Msgs collections after adding the valid message, where author = user: ', messageList);
 
 console.log('Add the message, where author != user: ', messageList.add(new Message(Math.random().toString(36).substr(2, 10), new Date(), 'Elon','Hi Alice', true, 'Alice')));
@@ -386,6 +524,7 @@ console.log('Remove message id = 3, where author = user:', messageList.remove('3
 console.log('Remove message id = 1, where author != user:', messageList.remove('1'));
 console.log('Msgs collections after removing: ', messageList);
 
-console.log('Add all:', messageList.addAll(messages));
+console.log('Add all:', messageList.addAll(messageList));*/
+
 //console.log(messageList.clear(messages));
 //console.log( 'Msgs collections after clearing: ', messageList);*/
