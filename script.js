@@ -228,7 +228,7 @@ class ActiveUsersView {
           <span class="user-name">${user}</span>
           <span class="user-status">online</span> 
         </div>
-      `)).join(`\n`); // online?
+      `))/*.join(`\n`); */// online?
 
     activeUsersListContainer.innerHTML = innerHTML;
   }
@@ -277,7 +277,7 @@ class MessagesView {
           </div>
         `)
       }
-    }).join(`\n`);
+    })/*.join(`\n`)*/;
   } 
 }
 
