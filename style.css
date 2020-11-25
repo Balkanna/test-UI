@@ -203,7 +203,8 @@ ul {
   height: 43rem;
 }
 
-.message__text {
+.message__container {
+  display: flex;
   padding: .5rem 1rem;
   margin: 0;
   box-shadow: 0 .28rem .57rem 0 rgba(0,0,0,0.2);
@@ -225,7 +226,7 @@ ul {
   justify-content: flex-end;  
 }
 
-.message__text:hover {
+.message__container:hover {
   box-shadow: var(--shadow-hover);
 }
 
@@ -307,21 +308,27 @@ ul {
 
 .user-message__change {
   display: flex;
-  justify-content: space-between;
+  /*justify-content: space-between;*/
+  justify-content: flex-end;
 } 
 
 .btn-edit,
 .btn-delete {
+  padding: 0;
   border: 0;
   background-color: transparent;
 }
 
 .btn-edit .iconify,
 .btn-delete .iconify {
-  width: 25px;
+  width: 20px;
   height: 20px;
   color: var(--blue-color);
   cursor: pointer;
+}
+
+.btn-edit {
+  padding-left: .5rem;
 }
 
 .btn-edit:hover,
