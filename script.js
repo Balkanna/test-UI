@@ -121,18 +121,24 @@ class MessageList {
 
   static validate(msg){
     const validateObj = {
-
       id: (msg) => msg.id && typeof msg.id === 'string',
       text: (msg) => msg.text && typeof msg.text === 'string' && msg.text.length <= 200,
       author: (msg) => msg.author && typeof msg.author === 'string',
-      createdAt: (msg) => msg.createdAt
-    }
-
-    if (msg.isPersonal) {
-      if (typeof msg.isPersonal !== 'boolean' || (msg.isPersonal && !(msg.to && typeof msg.to === 'string' && msg.to.length > 0))) {
+      createdAt: (msg) => msg.createdAt,
+      isPersonal: (msg) => {
+        if ((msg.isPersonal === false && !msg.to)
+          || (msg.isPersonal && msg.to && typeof msg.to === 'string')) {
+          return typeof msg.isPersonal === 'boolean';
+        }
         return false;
       }
     }
+
+    /*if (msg.isPersonal) {
+      if (typeof msg.isPersonal !== 'boolean' || (msg.isPersonal && !(msg.to && typeof msg.to === 'string' && msg.to.length > 0))) {
+        return false;
+      }
+    }*/
 
     return Object.keys(validateObj).every(key => validateObj[key](msg));  
   };
@@ -140,7 +146,7 @@ class MessageList {
   edit(id, msg) {
     const editObj = {
       text: (item, text) => text ? item.text = text : item.text,
-      to: (item, to) => to ? item.to = to : item,
+      to: (item, to) => to ? item.to = to : item
     };
 
     const msgIndex = this._messages.findIndex((msg) => msg.id === id);
@@ -182,24 +188,30 @@ class MessageList {
   }
 }
 
-/*class UserList {
-  constructor(users, activeUsers) {
-    this.users = users;
-    this.activeUsers = activeUsers;
+class UserList {
+  constructor(users = [], activeUsers = []) {
+    this._users = users;
+    this._activeUsers = activeUsers;
   }
 
-  get
+  get activeUsers() {
+    return this._activeUsers;
+  }
 
-  get
+  get users() {
+    return this._users;
+  }
 }
 
 class HeaderView {
   constructor(id) {
     this.id = id;
   }
-
-  display(params) {
-
+  display(user) {
+    let userHeader = document.getElementById(this.id);
+    if (user !== undefined) {
+      userHeader.innerHTML = user;
+    }
   }
 }
 
@@ -208,161 +220,127 @@ class ActiveUsersView {
     this.id = id;
   }
 
-  display(params) {
-
+  display(activeUsers) {
+    const activeUsersList = document.getElementById(this.id);
+    const innerHTML = activeUsers.map(item => (
+      `<div class="user-info">
+        <div class="circle"></div>
+        <span class="user-name">Alex</span>
+        <span class="user-status">online</span> 
+      </div>`)).join(`\n`); // online?
+    activeUsersList.innerHTML = innerHTML;
   }
-}*/
+}
+
+class MessagesView {
+  constructor(id) {
+    this.id = id;
+  }
+
+  display(messages) {
+    const messagesList = document.getElementById(this.id); //_
+    messagesList.innerHTML = messages.map( msg => {
+      let date = msg.createdAt.toLocaleDateString();
+      let time = msg.createdAt.toLocaleTimeString().slice(0, -3);
+
+      if (msg.author !== messageList.user) {
+        return (`
+          <div class="message-chat">
+            <div class="message-chat__info">
+              <div class="message__name">${msg.author}</div>
+              <div class="message__time">${time}</div>
+              <div class="message__date">${date}</div>
+            </div>
+            <div class="message__text">${msg.text}</div>
+          </div>
+        `)
+      }
+
+      else {
+        return (`
+          <div class="message-chat">
+            <div class="message-chat__info user-chat__info">
+              <div class="message__name ">${msg.author}</div>
+              <div class="message__time">${time}</div>
+              <div class="message__date">${date}</div>
+            </div>
+            <div class="message__text user-message">${msg.text}</div>
+          </div>
+          <div class="user-message__change">
+            <button class="btn-edit" title="Edit"><span class="iconify" data-icon="ic-baseline-edit" data-inline="false"></span></button>
+            <button class="btn-delete" title="Delete"><span class="iconify" data-icon="ic-baseline-delete-outline" data-inline="false"></span></button>
+          </div>
+        `)
+      }
+    }).join(`\n`);
+  } 
+}
+
+function setCurrentUser(user) {
+  messageList.user = user;
+  return headerView.display(user);
+}
+
+function showActiveUsers() {
+  return activeUsersView.display(userList.activeUsers);
+}
+
+function showMessages(skip = 0, top = 10, filterConfig = {}) {
+  return messagesView.display(messageList.getPage(skip, top, filterConfig));
+}
+
+function addMessage(msg) {
+  if (messageList.add(msg)) {
+    showMessages(0, 10);
+  }
+}
+
+function removeMessage(id) {
+  messageList.remove(id);
+  return messagesView.display(messageList.getPage());
+}
+
+function editMessage(id, msg) {
+  messageList.edit(id, msg);
+  return messagesView.display(messageList.getPage());
+}
 
 const messages = [
-  { 
-    id: '1',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    createdAt: new Date('2020-10-12T20:00:00'),
-    author: 'Tom',
-    isPersonal: false
-  },
-  {
-    id: '2',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    createdAt: new Date('2020-10-12T20:00:05'),
-    author: 'Tom',
-    isPersonal: false
-  },
-  {
-    id: '3',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    createdAt: new Date('2020-10-12T20:00:07'),
-    author: 'Anna',
-    isPersonal: false
-  },
-  {
-    id: '4',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    createdAt: new Date('2020-10-12T20:01:00'),
-    author: 'Elon',
-    isPersonal: false
-  },
-  {
-    id: '5',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    createdAt: new Date('2020-10-12T20:01:08'),
-    author: 'Tom',
-    isPersonal: false
-  },
-  {
-    id: '6',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    createdAt: new Date('2020-10-12T20:02:00'),
-    author: 'Anna',
-    isPersonal: false
-  },
-  {
-    id: '7',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    createdAt: new Date('2020-10-12T20:05:00'),
-    author: 'Tom',
-    isPersonal: false
-  },
-  {
-    id: '8',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    createdAt: new Date('2020-10-12T20:05:02'),
-    author: 'Alice',
-    isPersonal: false
-  },
-  {
-    id: '9',
-    text: 'Lorem lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    createdAt: new Date('2020-10-12T20:07:03'),
-    author: 'Tom',
-    isPersonal: false
-  },
-  {
-    id: '10',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    createdAt: new Date('2020-10-12T21:00:00'),
-    author: 'Anna',
-    isPersonal: false
-  },
-  {
-    id: '11',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    createdAt: new Date('2020-10-12T21:05:00'),
-    author: 'Elon',
-    isPersonal: false
-  },
-  {
-    id: '12',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    createdAt: new Date('2020-10-12T21:05:10'),
-    author: 'Maxim',
-    isPersonal: false
-  },
-  {
-    id: '13',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    createdAt: new Date('2020-10-12T21:06:00'),
-    author: 'Alice',
-    isPersonal: true,
-    to: 'Anna'
-  },
-  {
-    id: '14',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    createdAt: new Date('2020-10-12T21:07:01'),
-    author: 'Anna',
-    isPersonal: true,
-    to: 'Alice'
-  },
-  {
-    id: '15',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    createdAt: new Date('2020-10-12T22:04:09'),
-    author: 'Anna',
-    isPersonal: true,
-    to: 'Alice'
-  },
-  {
-    id: '16',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    createdAt: new Date('2020-10-12T22:05:00'),
-    author: 'Alice',
-    isPersonal: true,
-    to: 'Anna'
-  },
-  {
-    id: '17',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    createdAt: new Date('2020-10-12T22:08:07'),
-    author: 'Alice',
-    isPersonal: true,
-    to: 'Anna'
-  },
-  //invalid message
-  {
-    id: '18',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    createdAt: new Date('2020-10-12T22:09:00'),
-    author: 'Anna',
-    isPersonal: true,
-  },
-  {
-    id: '19',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    createdAt: new Date('2020-10-12T22:09:03'),
-    author: 'Elon',
-    isPersonal: false
-  },
-  {
-    id: '20',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    createdAt: new Date('2020-10-12T22:09:07'),
-    author: 'Alexander',
-    isPersonal: false
-  }
+  new Message('1', new Date('2020-10-12T20:00:00'), 'Tom','Lorem ipsum dolor sit amet, consectetur adipiscing elit.', false),
+  new Message('2', new Date('2020-10-12T20:00:05'), 'Tom', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.', false),
+  new Message('3', new Date('2020-10-12T20:00:07'), 'Anna', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.', false),
+  new Message('4', new Date('2020-10-12T20:01:00'), 'Elon', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.', false),
+  new Message('5', new Date('2020-10-12T20:01:08'), 'Tom', 'Lorem lorem ipsum dolor sit amet, consectetur adipiscing elit.', false),
+  new Message('6', new Date('2020-10-12T20:02:00'), 'Anna', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.', false),
+  new Message('7', new Date('2020-10-12T20:05:00'), 'Tom', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.', false),
+  new Message('8', new Date('2020-10-12T20:05:02'), 'Alice','Lorem ipsum dolor sit amet, consectetur adipiscing elit.', false),
+  new Message('9', new Date('2020-10-12T20:07:03'), 'Tom','Lorem ipsum dolor sit amet, consectetur adipiscing elit.', false),
+  new Message('10', new Date('2020-10-12T21:00:00'), 'Anna','Lorem ipsum dolor sit amet, consectetur adipiscing elit.', false),
+  new Message('11', new Date('2020-10-12T21:05:00'), 'Elon','Lorem ipsum dolor sit amet, consectetur adipiscing elit.', false),
+  new Message('12', new Date('2020-10-12T21:05:10'), 'Maxim','Lorem ipsum dolor sit amet, consectetur adipiscing elit.', false),
+  new Message('13', new Date('2020-10-12T21:06:00'), 'Anna','Lorem ipsum dolor sit amet, consectetur adipiscing elit.', true, 'Alice'),
+  new Message('14', new Date('2020-10-12T21:07:01'), 'Anna','Lorem ipsum dolor sit amet, consectetur adipiscing elit.', true, 'Alice'),
+  new Message('15', new Date('2020-10-12T22:04:09'), 'Anna','Lorem ipsum dolor sit amet, consectetur adipiscing elit.', true, 'Alice'),
+  new Message('16', new Date('2020-10-12T22:05:00'), 'Anna','Lorem ipsum dolor sit amet, consectetur adipiscing elit.', true, 'Tom'),
+  new Message('17', new Date('2020-10-12T22:08:07'), 'Maxim','Lorem ipsum dolor sit amet, consectetur adipiscing elit.', false),
+   //invalid message
+  new Message('18', new Date('2020-10-12T22:09:00'), 'Anna','Lorem ipsum dolor sit amet, consectetur adipiscing elit.', true),
+  new Message('19', new Date('2020-10-12T22:09:03'), 'Elon','Lorem ipsum dolor sit amet, consectetur adipiscing elit.', false),
+  new Message('20', new Date('2020-10-12T22:09:07'), 'Alexander','Lorem ipsum dolor sit amet, consectetur adipiscing elit.', false)
 ]
-
 const messageList = new MessageList(messages);
+const userList = new UserList(['Dima', 'Zhenya Zh.', 'Sasha', 'Pasha'], ['Dima', 'Zhenya']);
+const activeUsersView = new ActiveUsersView('users-list__content');
+const headerView = new HeaderView('name-authorization');
+const messagesView = new MessagesView('messages-block');
+
+setCurrentUser('Mike');
+
+showActiveUsers();
+
+//const chatMessagesView = new ChatMessagesView('chats-list');
+
+/*const messageList = new MessageList(messages);
 console.log('Msgs collections: ', messageList);
 
 console.log('Get message id = 3: ', messageList.get('3'));
@@ -379,26 +357,10 @@ console.log('Get messages of users (date): ', messageList.getPage(0, 20, {
   dateTo: new Date('2020-10-12T22:05:00')
 }));
 
-console.log('Add the message, where author = user: ', messageList.add({
-  text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-  author: 'Anna',
-  isPersonal: true,
-  to: 'Alice'
-}));
+console.log('Add the message, where author = user: ', messageList.add(new Message(Math.random().toString(36).substr(2, 10), new Date(), 'Anna','Hi Alice', true, 'Alice')));
 console.log('Msgs collections after adding the valid message, where author = user: ', messageList);
-/*console.log('Add the message, where author != user: ', messageList.add({
-  text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-  author: 'Elon',
-  isPersonal: true,
-  to: 'Max'
-}));*/
-console.log('Add the message, where author != user: ', messageList.add(/*new Message('Alice', 'Hello', true, 'Tom')));*/
-  {
-  author:'Elon',
-  text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-  isPersonal: true,
-  to: 'Max'
-}));
+
+console.log('Add the message, where author != user: ', messageList.add(new Message(Math.random().toString(36).substr(2, 10), new Date(), 'Elon','Hi Alice', true, 'Alice')));
 console.log('Msgs collections after adding the valid message, where author != user: ', messageList);
 console.log('Msg example, where text > 200 words: ', {
   text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
@@ -412,17 +374,9 @@ console.log('Add the invalid message (>200 words): ', messageList.add({
 }));
 console.log('Msgs collections after adding the invalid message (>200 words): ', messageList);
 
-console.log('Check valid message:', MessageList.validate({
-  author: 'Elon',
-  text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-  isPersonal: true,
-  to: 'Max'
-}));
-console.log('Check invalid message:', MessageList.validate({
-  text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-  createdAt: new Date('2020-10-12T20:00:00'),
-  isPersonal: false
-}));
+console.log('Check valid message:', MessageList.validate(new Message(Math.random().toString(36).substr(2, 10), new Date(), 'Anna','Hi Tom', true, 'Alice')));
+
+console.log('Check invalid message:', MessageList.validate(new Message(Math.random().toString(36).substr(2, 10), new Date(), 'Anna','Hi Alice', true)));
 
 console.log('Edit message, where author = user:', messageList.edit('15', {text:'I changed!'}));
 console.log('Edit message, where author != user:', messageList.edit('4', {text:'Hello World!'}));
@@ -434,4 +388,4 @@ console.log('Msgs collections after removing: ', messageList);
 
 console.log('Add all:', messageList.addAll(messages));
 //console.log(messageList.clear(messages));
-//console.log( 'Msgs collections after clearing: ', messageList);
+//console.log( 'Msgs collections after clearing: ', messageList);*/
