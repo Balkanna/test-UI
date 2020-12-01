@@ -357,15 +357,35 @@ class ChatController {
     console.log('Click!');
   }
 
-  activateFilter(event){
-    event.preventDefault();
-    let text = document.getElementById('textFilter').value;
+  getFilterResult(){
+    //event.preventDefault();
     let author = document.getElementById('nameFilter').value;
-    let dateFrom = document.getElementById('fromDateFilter').value;
-    let dateTo = document.getElementById('toDateFilter').value;
-    console.log(text, author, dateTo, dateFrom);
-    return controller.showMessages(0, 20, {text, author, dateTo, dateFrom}); //TODO
+    let text = document.getElementById('textFilter').value;
+    let dateFrom = new Date(document.getElementById('fromDateFilter').value);
+    let dateTo = new Date(document.getElementById('toDateFilter').value);
+    this.showMessages(0, 10, {author, text, dateFrom, dateTo});
+    console.log('click');
   }
+
+  /*getFilterResult(event) {
+    let filter = {};
+    if (event.target[0].value) {
+        filter.author = event.target[0].value;
+    }
+    
+    if (event.target[1].value) {
+        filter.dateFrom = new Date(event.target[1].value);
+    }
+    if (event.target[2].value) {
+       filter.dateTo = new Date(event.target[2].value);
+    }
+    if (event.target[3].value) {
+        filter.text = event.target[3].value;
+     }
+    this.showMessages(0, 10, filter);
+    //this.numberOfMessagesShown = 10;
+  }*/
+
 }
 
 
@@ -519,20 +539,20 @@ const messageList = new MessageList([
 
 const controller = new ChatController();
 
-controller.setCurrentUser('Anna');
+controller.setCurrentUser();
 controller.showActiveUsers(this.userList);
 controller.showMessages();
 controller.editMessage('19', {text: 'Hello! I have already changed the text of this message!'});
 //controller.removeMessage('20');
 controller.addMessage(new Message(Math.random().toString(36).substr(2, 10), new Date(), 'Anna','Hello! I have already added the new message! Wow)', false));
 
-/*const btnSignInHeader = document.getElementById("btn-sign-in");
-btnSignInHeader.addEventListener('click', controller.moveToLoginPage);*/
+const btnSignInHeader = document.getElementById("btn-sign-in");
+btnSignInHeader.addEventListener('click', controller.moveToLoginPage);
 const linkSignIn = document.getElementById("link-sign-in");
 linkSignIn.addEventListener('click', controller.moveToLoginPage);
 
-const btnSignOut = document.getElementById("btn-sign-out");
-btnSignOut.addEventListener('click', controller.returnToChatPage2); //TODO ОТРИСОВАТЬ СТРАНИЦУ ПОСЛЕ ВЫХОДА ЮЗЕРА*/
+/*const btnSignOut = document.getElementById("btn-sign-out");
+btnSignOut.addEventListener('click', controller.returnToChatPage2);*/ //TODO ОТРИСОВАТЬ СТРАНИЦУ ПОСЛЕ ВЫХОДА ЮЗЕРА*/
 
 const linkSignUp = document.getElementById("link-sign-up");
 linkSignUp.addEventListener('click', controller.moveToRegistrPage);
@@ -542,8 +562,9 @@ linkBackToChat.addEventListener('click', controller.returnToChatPage);
 const linkBackToChat2 = document.getElementById("back-link-signup");
 linkBackToChat2.addEventListener('click', controller.returnToChatPage);
 
-const btnFilter = document.getElementById("btn-filter");
-btnFilter.addEventListener('click', controller.activateFilter);
+/*const form = document.getElementById("main__filter");
+//const btnFilter = document.getElementById("btn-filter");
+form.addEventListener('submit', controller.getFilterResult);*/
 
 const btnDelete = document.getElementById("btn-delete");
 //btnDelete.addEventListener('click', controller.removeMessage);
