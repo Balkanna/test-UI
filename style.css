@@ -85,7 +85,7 @@ ul {
 .btn {
   padding: 0 1rem;
   width: auto;
-  height: 1.7rem;
+  //height: 1.7rem;
   background-color: var(--btn-color);
   border-radius: var(--border-radius);
   border-style: none;
@@ -237,7 +237,7 @@ ul {
 
 .users-list__main {
   display: block;
-  height: 100%;
+  height: 96%;
   background: rgba(196, 196, 196, 0.4);
 }
 
@@ -273,11 +273,12 @@ ul {
 
 .messages-container {
   padding: 0 3.6rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .btn-add-messages {
-  position: relative;
-  left: 40%;
+  align-self: center;
 }
 
 .message-chat__info {
@@ -308,7 +309,6 @@ ul {
 
 .user-message__change {
   display: flex;
-  /*justify-content: space-between;*/
   justify-content: flex-end;
 } 
 
@@ -425,6 +425,7 @@ ul {
 }
 
 @media screen and (max-width: 980px) {
+
   .messages-container {
     padding: 0 1.4rem;
   }
@@ -500,4 +501,62 @@ ul {
   .footer__email {
     margin-top: 0;
   }
+}
+
+/*Sign Up*/
+
+.registration-container,
+.authorization-container {
+  display: none;
+}
+
+.registration-form-block,
+.authorization-form-block {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #89EFBF;
+  border-radius: 2rem;
+  max-width: 28rem;
+  margin: 10rem auto;
+  padding: 3rem 0;
+}
+
+.registration-form,
+.authorization-form {
+  display: flex;
+  flex-direction: column;
+  width: 17rem;
+}
+
+.form-label {
+  margin: 0;
+  color: var(--text-color);
+  font-size: 2rem;
+}
+
+.registration-input,
+.authorization-input {
+  background-color: var(--text-color);
+  padding: 1rem;
+  margin-top: .6rem;
+  border-radius: 2rem;
+  border: none;
+}
+
+.registration-button,
+.authorization-button {
+  padding: .5rem 0;
+  margin-top: 1.5rem;
+}
+
+.link {
+  color: var(--blue-color);
+  cursor: pointer;
+}
+
+.account-available {
+  margin-top: .4rem;
+  text-align: center;
 }
