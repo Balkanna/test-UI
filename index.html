@@ -30,7 +30,7 @@
     </div>
     <div class="container">
       <div class="section-left" id="section-left" >
-        <form class="main__filter" id="main__filter" action="" >
+        <form class="main__filter" id="main__filter" action="" onsubmit="event.preventDefault(); controller.getFilterResult(event);">
           <label for="nameFilter">Name:</label>
           <input class="main__filter-name btn-filter" type="text" id="nameFilter" placeholder="Type name..." name="nameFilter" size="15">
 
@@ -41,7 +41,7 @@
           <input class="main__filter-date btn-filter" id="fromDateFilter" type="date" name="fromDateFilter" >
           <input class="main__filter-date btn-filter" id="toDateFilter" type="date" name="toDateFilter" >
 
-          <button class="btn-filter btn" id="btn-filter" type="button">Filter</button>
+          <button onsubmit="controller.showMessages(0, 10, {author, text, dateFrom, dateTo})" class="btn-filter btn" id="btn-filter" type="submit">Filter</button>
         </form>
         <div class="users-list__main" id="users-list__main">
           <h3 class="users-list__name">All  users</h3>
