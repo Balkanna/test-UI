@@ -1,6 +1,7 @@
 ﻿const LOCALSTORAGE_KEY = 'messages';
 
 class Message {
+
   constructor(id, createdAt, author, text, isPersonal, to) {
     this._id = id;
     this._createdAt = createdAt;
@@ -98,11 +99,11 @@ class MessageList {
   };
 
   getPage(skip = 0, top = 10, filterConfig = {}) {
-    const filterObj = {
+    const filterObj = { 
       text: (item, text) => text && item.text.toLowerCase().includes(text.toLowerCase()),
       author: (item, author) => author && item.author.toLowerCase().includes(author.toLowerCase()),
       dateTo: (item, dateTo) => dateTo && item.createdAt < dateTo,
-      dateFrom: (item, dateFrom) => dateFrom && item.createdAt > dateFrom
+      dateFrom: (item, dateFrom) => dateFrom && item.createdAt > dateFrom,
     }
 
     let result = this._messages.slice().filter(item => {
@@ -215,14 +216,9 @@ class HeaderView {
   }
 
   display(user) {
-    let userHeader = document.getElementById(this.id);
-    let messageSend = document.getElementById("message-send");
+    //let userHeader = document.getElementById(this.id);
     let btnAuthorization = document.getElementById("header");
-
-    messageSend.innerHTML = `<input class="message-send__input" type="text" placeholder="Write a message..." ${messageList.user !== undefined ? '' : 'disabled'}>
-    <button type="submit" class="message-send__icon">
-      <span class="iconify" data-icon="ic-round-send" data-inline="false"></span>
-    </button>`
+    let messageSend = document.getElementById("message-send");
   
     btnAuthorization.innerHTML = 
     `<div class="container">
@@ -238,6 +234,15 @@ class HeaderView {
         </div>
       </div>
     </div>`;
+
+    messageSend.innerHTML = 
+      `<form onsubmit="event.prevenDefault(); controller.sendMessage(event)">
+        <textarea class="message-send__input" id="message-send__input" type="text" placeholder="Write a message..." ${messageList.user !== undefined ? '' : 'disabled'}></textarea>
+        <button type="submit" class="message-send__icon">
+          <span class="iconify" data-icon="ic-round-send" data-inline="false"></span>
+        </button>
+      </form>
+      `
   }
 }
 
@@ -357,38 +362,44 @@ class ChatController {
     console.log('Click!');
   }
 
-  getFilterResult(){
-    //event.preventDefault();
+  getFilterResult() {
+    const filterConfig = {};
+
     let author = document.getElementById('nameFilter').value;
     let text = document.getElementById('textFilter').value;
     let dateFrom = new Date(document.getElementById('fromDateFilter').value);
     let dateTo = new Date(document.getElementById('toDateFilter').value);
-    this.showMessages(0, 10, {author, text, dateFrom, dateTo});
-    console.log('click');
+
+    if (author) {
+      filterConfig.author = author;
+    };
+
+    if (text) {
+      filterConfig.text = text;
+    };
+
+    if (dateFrom.toString() !== 'Invalid Date') {
+      filterConfig.dateFrom = dateFrom;
+    };
+
+    if (dateTo.toString() !== 'Invalid Date') {
+      filterConfig.dateTo = dateTo;
+    };
+
+    this.showMessages(0, 10, filterConfig);
+    console.log('Submit form');
   }
 
-  /*getFilterResult(event) {
-    let filter = {};
-    if (event.target[0].value) {
-        filter.author = event.target[0].value;
-    }
-    
-    if (event.target[1].value) {
-        filter.dateFrom = new Date(event.target[1].value);
-    }
-    if (event.target[2].value) {
-       filter.dateTo = new Date(event.target[2].value);
-    }
-    if (event.target[3].value) {
-        filter.text = event.target[3].value;
-     }
-    this.showMessages(0, 10, filter);
-    //this.numberOfMessagesShown = 10;
-  }*/
+  sendMessage() {
+    let newMessage = document.getElementById('message-send__input').value;
+    this.addMessage({ text: newMessage });
+    //addMessage(new Message(Math.random().toString(36).substr(2, 10), new Date(), 'Anna','Hello! I have already added the new message! Wow)', false));
+    this.showMessages(0, 10);
+    document.getElementById('message-send__input').value = '';
+    console.log('Send message!');
+  }
 
 }
-
-
 
 const messageList = new MessageList([
   {
@@ -539,20 +550,20 @@ const messageList = new MessageList([
 
 const controller = new ChatController();
 
-controller.setCurrentUser();
+controller.setCurrentUser('Anna');
 controller.showActiveUsers(this.userList);
 controller.showMessages();
 controller.editMessage('19', {text: 'Hello! I have already changed the text of this message!'});
 //controller.removeMessage('20');
 controller.addMessage(new Message(Math.random().toString(36).substr(2, 10), new Date(), 'Anna','Hello! I have already added the new message! Wow)', false));
 
-const btnSignInHeader = document.getElementById("btn-sign-in");
-btnSignInHeader.addEventListener('click', controller.moveToLoginPage);
+/*const btnSignInHeader = document.getElementById("btn-sign-in");
+btnSignInHeader.addEventListener('click', controller.moveToLoginPage);*/
 const linkSignIn = document.getElementById("link-sign-in");
 linkSignIn.addEventListener('click', controller.moveToLoginPage);
 
-/*const btnSignOut = document.getElementById("btn-sign-out");
-btnSignOut.addEventListener('click', controller.returnToChatPage2);*/ //TODO ОТРИСОВАТЬ СТРАНИЦУ ПОСЛЕ ВЫХОДА ЮЗЕРА*/
+const btnSignOut = document.getElementById("btn-sign-out");
+btnSignOut.addEventListener('click', controller.returnToChatPage2);//TODO ОТРИСОВАТЬ СТРАНИЦУ ПОСЛЕ ВЫХОДА ЮЗЕРА*/
 
 const linkSignUp = document.getElementById("link-sign-up");
 linkSignUp.addEventListener('click', controller.moveToRegistrPage);

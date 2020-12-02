@@ -41,7 +41,7 @@
           <input class="main__filter-date btn-filter" id="fromDateFilter" type="date" name="fromDateFilter" >
           <input class="main__filter-date btn-filter" id="toDateFilter" type="date" name="toDateFilter" >
 
-          <button onsubmit="controller.showMessages(0, 10, {author, text, dateFrom, dateTo})" class="btn-filter btn" id="btn-filter" type="submit">Filter</button>
+          <button onsubmit="controller.showMessages(0, 10, {text, author, dateTo, dateFrom})" class="btn-filter btn" id="btn-filter" type="submit">Filter</button>
         </form>
         <div class="users-list__main" id="users-list__main">
           <h3 class="users-list__name">All  users</h3>
