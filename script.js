@@ -1,6 +1,7 @@
 ﻿const LOCALSTORAGE_KEY = 'messages';
 
 class Message {
+
   constructor(id, createdAt, author, text, isPersonal, to) {
     this._id = id;
     this._createdAt = createdAt;
