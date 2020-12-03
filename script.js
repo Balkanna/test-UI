@@ -278,12 +278,12 @@ class MessagesView {
 
       return (`
         <div class="message-chat">
-          <div class="message-chat__info ${msg.author === messageList.user ? "user-chat__info" : "" }">
+          <div id="message-chat__info" class="message-chat__info ${msg.author === messageList.user ? "user-chat__info" : "" }">
             <div class="message__name">${msg.author}</div>
             <div class="message__time">${time}</div>
             <div class="message__date">${createdAt}</div>
           </div>
-          <div class="message__container ${msg.author === messageList.user ? "user-message" : "" }">
+          <div id="message__container" class="message__container ${msg.author === messageList.user ? "user-message" : "" }">
             <div class="message__text">${msg.text}</div>
             ${msg.author === messageList.user ? 
             `<div class="user-message__change">
@@ -368,7 +368,10 @@ class ChatController {
     document.getElementById('main').style.display = "block";
     //btnSignInHeader.style.display = "block";
     btnSignOut.style.display = "none";
-    console.log('Click!');
+    document.getElementById('messages-block')
+    document.getElementById("message__container").classList.remove("user-message"); //TODO удаляется только в 1 сообщении
+    document.getElementById("message-chat__info").classList.remove("user-chat__info");
+    console.log('Click: back!');
   }
 
   getFilterResult() {
@@ -576,22 +579,6 @@ controller.addMessage(new Message(Math.random().toString(36).substr(2, 10), new 
 const btnLoadMessages = document.getElementById("btn-load-messages");
 btnLoadMessages.addEventListener('click', () => {controller.loadMoreMessages()});
 
-/*const btnSignInHeader = document.getElementById("btn-sign-in");
-btnSignInHeader.addEventListener('click', controller.moveToLoginPage);*/
-const linkSignIn = document.getElementById("link-sign-in");
-linkSignIn.addEventListener('click', controller.moveToLoginPage);
-
-const btnSignOut = document.getElementById("btn-sign-out");
-btnSignOut.addEventListener('click', controller.returnToChatPage2);//TODO ОТРИСОВАТЬ СТРАНИЦУ ПОСЛЕ ВЫХОДА ЮЗЕРА*/
-
-const linkSignUp = document.getElementById("link-sign-up");
-linkSignUp.addEventListener('click', controller.moveToRegistrPage);
-
-const linkBackToChat = document.getElementById("back-link-signin");
-linkBackToChat.addEventListener('click', controller.returnToChatPage);
-const linkBackToChat2 = document.getElementById("back-link-signup");
-linkBackToChat2.addEventListener('click', controller.returnToChatPage);
-
 const messagesBlock = document.getElementById("messages-block"); //TODO
 messagesBlock.addEventListener('click', event => {
   const target = event.target;
@@ -616,6 +603,21 @@ messagesBlock.addEventListener('click', event => {
   console.log(target, targetClassList);
 });
 
+/*const btnSignInHeader = document.getElementById("btn-sign-in");
+btnSignInHeader.addEventListener('click', controller.moveToLoginPage);*/
+const linkSignIn = document.getElementById("link-sign-in");
+linkSignIn.addEventListener('click', controller.moveToLoginPage);
+
+const btnSignOut = document.getElementById("btn-sign-out");
+btnSignOut.addEventListener('click', controller.returnToChatPage2);//TODO ОТРИСОВАТЬ СТРАНИЦУ ПОСЛЕ ВЫХОДА ЮЗЕРА*/
+
+const linkSignUp = document.getElementById("link-sign-up");
+linkSignUp.addEventListener('click', controller.moveToRegistrPage);
+
+const linkBackToChat = document.getElementById("back-link-signin");
+linkBackToChat.addEventListener('click', controller.returnToChatPage);
+const linkBackToChat2 = document.getElementById("back-link-signup");
+linkBackToChat2.addEventListener('click', controller.returnToChatPage);
 
 /*const userList = new UserList(['Alexander', 'Alice', 'Elon', 'Max','Tom', 'Natasha'], ['Alexander', 'Alice', 'Elon', 'Max','Tom']);
 const activeUsersView = new ActiveUsersView('users-list__content');
