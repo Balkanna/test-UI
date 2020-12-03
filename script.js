@@ -236,9 +236,9 @@ class HeaderView {
     </div>`;
 
     messageSend.innerHTML = 
-      `<form onsubmit="event.prevenDefault(); controller.sendMessage(event)">
+      `<form onsubmit="event.preventDefault(); controller.sendMessage(event)">
         <textarea class="message-send__input" id="message-send__input" type="text" placeholder="Write a message..." ${messageList.user !== undefined ? '' : 'disabled'}></textarea>
-        <button type="submit" class="message-send__icon">
+        <button type="submit" class="message-send__icon" ${messageList.user !== undefined ? '' : 'disabled'}>
           <span class="iconify" data-icon="ic-round-send" data-inline="false"></span>
         </button>
       </form>
@@ -287,8 +287,8 @@ class MessagesView {
             <div class="message__text">${msg.text}</div>
             ${msg.author === messageList.user ? 
             `<div class="user-message__change">
-              <button button class="btn-edit" id="btn-edit" title="Edit"><span class="iconify" data-icon="ic-baseline-edit" data-inline="false"></span></button>
-              <button class="btn-delete" id="btn-delete" title="Delete"><span class="iconify" data-icon="ic-baseline-delete-outline" data-inline="false"></span></button>
+              <button class="btn-edit" id="btn-edit" title="Edit"><span class="iconify iconify-edit" id="iconify-edit" data-icon="ic-baseline-edit" data-inline="false"></span></button>
+              <button class="btn-delete" id="btn-delete" title="Delete"><span class="iconify iconify-delete" id="iconify-delete" data-icon="ic-baseline-delete-outline" data-inline="false"></span></button>
             </div>` : ''}
           </div>
         </div>
@@ -303,6 +303,15 @@ class ChatController {
     this.activeUsersView = new ActiveUsersView('users-list__content');
     this.headerView = new HeaderView('header');
     this.messagesView = new MessagesView('messages-block');
+    this._numberLoadedMessages = 10; // ??? правильно ли 10?
+  }
+
+  get numberLoadedMessages() {
+    return this._numberLoadedMessages;
+  }
+
+  set numberLoadedMessages(num) {
+      this._numberLoadedMessages = num;
   }
 
   setCurrentUser(user) {
@@ -390,13 +399,20 @@ class ChatController {
     console.log('Submit form');
   }
 
-  sendMessage() {
+  sendMessage() { //TODO
     let newMessage = document.getElementById('message-send__input').value;
     this.addMessage({ text: newMessage });
-    //addMessage(new Message(Math.random().toString(36).substr(2, 10), new Date(), 'Anna','Hello! I have already added the new message! Wow)', false));
-    this.showMessages(0, 10);
+    //this.addMessage(new Message(Math.random().toString(36).substr(2, 10), new Date(), 'Anna','Hello!!! I have already added the new message! Wow)', false));
+    this.showMessages(0, 30, { text: newMessage });
     document.getElementById('message-send__input').value = '';
-    console.log('Send message!');
+    console.log('Add message!');
+    console.log(newMessage);
+  }
+
+  loadMoreMessages() {
+    let number = this.numberLoadedMessages + 10;
+    this.showMessages(0, number);
+    this.numberLoadedMessages = number;
   }
 
 }
@@ -557,6 +573,9 @@ controller.editMessage('19', {text: 'Hello! I have already changed the text of t
 //controller.removeMessage('20');
 controller.addMessage(new Message(Math.random().toString(36).substr(2, 10), new Date(), 'Anna','Hello! I have already added the new message! Wow)', false));
 
+const btnLoadMessages = document.getElementById("btn-load-messages");
+btnLoadMessages.addEventListener('click', () => {controller.loadMoreMessages()});
+
 /*const btnSignInHeader = document.getElementById("btn-sign-in");
 btnSignInHeader.addEventListener('click', controller.moveToLoginPage);*/
 const linkSignIn = document.getElementById("link-sign-in");
@@ -573,33 +592,29 @@ linkBackToChat.addEventListener('click', controller.returnToChatPage);
 const linkBackToChat2 = document.getElementById("back-link-signup");
 linkBackToChat2.addEventListener('click', controller.returnToChatPage);
 
-/*const form = document.getElementById("main__filter");
-//const btnFilter = document.getElementById("btn-filter");
-form.addEventListener('submit', controller.getFilterResult);*/
-
-const btnDelete = document.getElementById("btn-delete");
-//btnDelete.addEventListener('click', controller.removeMessage);
-
-const messagesBlock = document.getElementById("messages-block");
+const messagesBlock = document.getElementById("messages-block"); //TODO
 messagesBlock.addEventListener('click', event => {
   const target = event.target;
   const targetClassList = target.classList;
 
   switch (true) {
-      case targetClassList.contains('message-chat'):
-      //case targetClassList.contains('task__title'):
-        break;
+    case targetClassList.contains('messages-block'):
+      break;
 
-      case targetClassList.contains('btn-edit'):
-        controller.removeMessage.editMessage(target.parentNode);
-        break;
+    case targetClassList.contains('btn-edit'):
+      controller.editMessage(target.parentNode.parentNode);
+      console.log("Edit!");
+      break;
 
-      case targetClassList.contains('btn-delete'):
-        controller.removeMessage.removeMessage(target.parentNode.parentNode);
-        break;
+    case targetClassList.contains('btn-delete'):
+      confirm("Do you want to delete this message?");
+      controller.removeMessage(target.parentNode.parentNode);
+      console.log("Delete!");
+      break;
   }
+  console.log('Click!');
+  console.log(target, targetClassList);
 });
-
 
 
 /*const userList = new UserList(['Alexander', 'Alice', 'Elon', 'Max','Tom', 'Natasha'], ['Alexander', 'Alice', 'Elon', 'Max','Tom']);

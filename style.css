@@ -200,6 +200,7 @@ ul {
   padding: 0 1rem;
   overflow-y: auto;
   width: 100%;
+  max-width: 35rem;;
   height: 43rem;
 }
 
@@ -277,7 +278,7 @@ ul {
   flex-direction: column;
 }
 
-.btn-add-messages {
+.btn-load-messages {
   align-self: center;
 }
 
@@ -360,8 +361,9 @@ ul {
   width: 45%;
 }
 
-.message-send input[placeholder] {
-  padding: .64rem;
+.message-send textarea[placeholder] {
+  padding-top: .5rem;
+  padding-left: .5rem;
 }
 
 .message-send__icon {
@@ -373,7 +375,7 @@ ul {
 
 .iconify {
   width: 2.2rem;
-  height: 2.2rem;
+  height: 2.6rem;
   color: var(--blue-color);
   cursor: pointer;
 }
