@@ -4,24 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="keywords" content="yoga, chat, yogachat">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css"
+  integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
   <link rel="stylesheet" href="./style.css">
   <title>YogaChat</title>
 </head>
 <body>
   
-  <header class="header" id="header">
-    <!--<div class="container">
-      <div class="header__inner">
-        <div class="header__logo">
-          <img src="./images/logo_chat.png" alt="logo" class="logo">
-        </div>
-        <div class="header__authorization" id="header__authorization">
-          <div class="name-authorization" id="name-authorization"></div>
-          <button class="btn-authorization btn" id="btn-authorization" type="button">Log Out</button>
-        </div>
-      </div>
-    </div>-->
-  </header>
+  <header class="header" id="header"></header>
 
   <main class="main" id="main">
     <div class="section-top">
@@ -52,20 +42,15 @@
         <div class="messages-container">
           <button class="btn-load-messages btn" id="btn-load-messages">&#43 10 messages</button>
           <div class="messages-block" id="messages-block"></div>
-          <div class="message-send" id="message-send">
-            <!--<input class="message-send__input" type="text" placeholder="Write a message...">
-            <button type="submit" class="message-send__icon">
-              <span class="iconify" data-icon="ic-round-send" data-inline="false"></span>
-            </button>
-          </div>
-        </div>-->
+          <div class="message-send" id="message-send"></div>
+        </div>
       </div>
     </div>
   </main>
 
   <section class="registration-container" id="registration-container">
     <div class="navigation-link">
-      <div><a class="back-to-chat link" id="back-link-signup">Back to Chat</a></div>
+      <div class="back-container"><a class="back-to-chat link" id="back-link-signup">Back to Chat</a></div>
     </div>
     <div class="registration-form-block">
       <h3 class="form-label">Sign Up</h3>
@@ -81,7 +66,7 @@
 
   <section class="authorization-container" id="authorization-container">
     <div class="navigation-link">
-      <div><a class="back-to-chat link" id="back-link-signin">Back to Chat</a></div>
+      <div class="back-container"><a class="back-to-chat link" id="back-link-signin">Back to Chat</a></div>
     </div>
     <div class="authorization-form-block">
       <h3 class="form-label">Sign In</h3>
@@ -90,6 +75,7 @@
         <input type="password" class="password authorization-input text-input-placeholder" placeholder="Enter Password"/>
         <button type="submit" class="authorization-button btn" id="authorization-button">Sign In</button>
         <div class="account-available">Don't have an account? <a class="link-sign-up link" id="link-sign-up">Sign Up</a></div>
+        <span class="error-message" id="error-message">Incorrect Login or Password!</span>
       </form>
     </div>
   </section>

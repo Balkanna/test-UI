@@ -122,6 +122,7 @@ class MessageList {
   };
 
   add(msg) {
+    console.log(this);
     const newMsg = new Message(Math.random().toString(36).substr(2, 10), new Date(), this.user, msg.text, msg.isPersonal, msg.to);
     if (MessageList.validate(newMsg) && msg.author === this.user) {
       this._messages.push(newMsg);
@@ -216,7 +217,6 @@ class HeaderView {
   }
 
   display(user) {
-    //let userHeader = document.getElementById(this.id);
     let btnAuthorization = document.getElementById("header");
     let messageSend = document.getElementById("message-send");
   
@@ -277,7 +277,7 @@ class MessagesView {
       let time = msg.createdAt.toLocaleTimeString().slice(0, -3);
 
       return (`
-        <div class="message-chat">
+        <div class="message-chat" id="message-chat">
           <div id="message-chat__info" class="message-chat__info ${msg.author === messageList.user ? "user-chat__info" : "" }">
             <div class="message__name">${msg.author}</div>
             <div class="message__time">${time}</div>
@@ -286,9 +286,9 @@ class MessagesView {
           <div id="message__container" class="message__container ${msg.author === messageList.user ? "user-message" : "" }">
             <div class="message__text">${msg.text}</div>
             ${msg.author === messageList.user ? 
-            `<div class="user-message__change">
-              <button class="btn-edit" id="btn-edit" title="Edit"><span class="iconify iconify-edit" id="iconify-edit" data-icon="ic-baseline-edit" data-inline="false"></span></button>
-              <button class="btn-delete" id="btn-delete" title="Delete"><span class="iconify iconify-delete" id="iconify-delete" data-icon="ic-baseline-delete-outline" data-inline="false"></span></button>
+            `<div class="user-message__change" id="user-message__change">
+              <button class="btn-edit" id="btn-edit" title="Edit"><i class="fas fa-pencil-alt icon-edit"></i></button>
+              <button class="btn-delete" id="btn-delete" title="Delete"><i class="fas fa-trash-alt icon-delete" id="icon-delete"></i></button>
             </div>` : ''}
           </div>
         </div>
@@ -303,7 +303,7 @@ class ChatController {
     this.activeUsersView = new ActiveUsersView('users-list__content');
     this.headerView = new HeaderView('header');
     this.messagesView = new MessagesView('messages-block');
-    this._numberLoadedMessages = 10; // ??? правильно ли 10?
+    this._numberLoadedMessages = 10;                         
   }
 
   get numberLoadedMessages() {
@@ -350,7 +350,7 @@ class ChatController {
     btnSignInHeader.style.display = "none";
   }
 
-  moveToRegistrPage() {
+  moveToRegistrationPage() {
     document.getElementById('registration-container').style.display = "block";
     document.getElementById('authorization-container').style.display = "none";
     btnSignInHeader.style.display = "none";
@@ -363,14 +363,12 @@ class ChatController {
     btnSignInHeader.style.display = "block";
   }
 
-  returnToChatPage2() { //TODO после установки signin нельзя войти в авторизацию
+  returnToChatPage2() {
     controller.setCurrentUser();
     document.getElementById('main').style.display = "block";
-    //btnSignInHeader.style.display = "block";
     btnSignOut.style.display = "none";
-    document.getElementById('messages-block')
-    document.getElementById("message__container").classList.remove("user-message"); //TODO удаляется только в 1 сообщении
-    document.getElementById("message-chat__info").classList.remove("user-chat__info");
+    controller.showMessages(0, 10);
+    controller.moveToRegistrationPage();
     console.log('Click: back!');
   }
 
@@ -402,11 +400,11 @@ class ChatController {
     console.log('Submit form');
   }
 
-  sendMessage() { //TODO
+  sendMessage(msg) { //TODO
     let newMessage = document.getElementById('message-send__input').value;
-    this.addMessage({ text: newMessage });
-    //this.addMessage(new Message(Math.random().toString(36).substr(2, 10), new Date(), 'Anna','Hello!!! I have already added the new message! Wow)', false));
-    this.showMessages(0, 30, { text: newMessage });
+    //this.addMessage({ text: newMessage });
+    //this.addMessage({id: Math.random().toString(36).substr(2, 10), createdAt: new Date(), author: MessageList.user, text: newMessage, isPersonal: false});
+    this.showMessages(0, 30, {id: Math.random().toString(36).substr(2, 10), createdAt: new Date(), author: MessageList.user, text: newMessage, isPersonal: false});
     document.getElementById('message-send__input').value = '';
     console.log('Add message!');
     console.log(newMessage);
@@ -416,6 +414,25 @@ class ChatController {
     let number = this.numberLoadedMessages + 10;
     this.showMessages(0, number);
     this.numberLoadedMessages = number;
+  }
+
+  login(user) {
+    const btnRegistration = document.getElementById("registration-button");
+    btnRegistration.addEventListener('click', this.moveToRegistrationPage);
+
+    const returnToChatButton = document.getElementById("return-to-chat");
+    returnToChatButton.addEventListener('click', this.returnToChatPage);
+
+    if (this.userList.users.includes(user)) {
+
+      localStorage.setItem("user", user);
+      this.setCurrentUser(user);
+      this.showMessages();
+      this.returnToChatPage();
+    }
+    else {
+      document.getElementById("error-message").style.display = "inline";
+    }
   }
 
 }
@@ -570,6 +587,8 @@ const messageList = new MessageList([
 const controller = new ChatController();
 
 controller.setCurrentUser('Anna');
+//controller.setCurrentUser();
+
 controller.showActiveUsers(this.userList);
 controller.showMessages();
 controller.editMessage('19', {text: 'Hello! I have already changed the text of this message!'});
@@ -588,14 +607,14 @@ messagesBlock.addEventListener('click', event => {
     case targetClassList.contains('messages-block'):
       break;
 
-    case targetClassList.contains('btn-edit'):
-      controller.editMessage(target.parentNode.parentNode);
-      console.log("Edit!");
+    case targetClassList.contains('icon-edit'):
+      controller.editMessage(target.id);
+      console.log('Edit!');
       break;
 
-    case targetClassList.contains('btn-delete'):
+    case targetClassList.contains('icon-delete'):
       confirm("Do you want to delete this message?");
-      controller.removeMessage(target.parentNode.parentNode);
+      controller.removeMessage(target.parentNode.parentNode.parentNode.parentNode.id);
       console.log("Delete!");
       break;
   }
@@ -603,16 +622,33 @@ messagesBlock.addEventListener('click', event => {
   console.log(target, targetClassList);
 });
 
+/*document
+  .getElementById("messages-block")
+  .addEventListener("click", function (event) {
+    console.log(event.target.id);
+    if (event.target.id === "icon-delete") {
+      confirm("Do you want to delete this message?");
+      const id = document.getElementById("icon-delete").parentNode.parentNode.parentNode.parentNode.id;
+      controller.removeMessage(id);
+    }
+    if (event.target.id === "icon-edit") {
+      alert("icon-edit");
+      console.log(document.getElementById("icon-edit").parentNode.parentNode);
+      const id = document.getElementById("icon-edit").parentNode.parentNode.id;
+      controller.editMessage(document.getElementById(id));
+    }
+  });
+
 /*const btnSignInHeader = document.getElementById("btn-sign-in");
 btnSignInHeader.addEventListener('click', controller.moveToLoginPage);*/
 const linkSignIn = document.getElementById("link-sign-in");
 linkSignIn.addEventListener('click', controller.moveToLoginPage);
 
 const btnSignOut = document.getElementById("btn-sign-out");
-btnSignOut.addEventListener('click', controller.returnToChatPage2);//TODO ОТРИСОВАТЬ СТРАНИЦУ ПОСЛЕ ВЫХОДА ЮЗЕРА*/
+btnSignOut.addEventListener('click', controller.returnToChatPage2);
 
 const linkSignUp = document.getElementById("link-sign-up");
-linkSignUp.addEventListener('click', controller.moveToRegistrPage);
+linkSignUp.addEventListener('click', controller.moveToRegistrationPage);
 
 const linkBackToChat = document.getElementById("back-link-signin");
 linkBackToChat.addEventListener('click', controller.returnToChatPage);
@@ -631,7 +667,6 @@ editMessage('19', {text: 'Hello! I have already changed the text of this message
 removeMessage('20');
 addMessage(new Message(Math.random().toString(36).substr(2, 10), new Date(), 'Anna','Hello! I have already added the new message! Wow)', false));
 */
-
 /*console.log('Msgs collections: ', messageList);
 console.log('Get message id = 3: ', messageList.get('3'));
 console.log('Get messages (default): ', messageList.getPage());
