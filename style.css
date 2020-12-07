@@ -4,8 +4,9 @@
   --btn-color: rgba(44,146,230,0.75);
   --shadow-hover: 0 .5rem 1.4rem 0 rgba(0,0,0,0.2);
   --header-footer-color: #19C39F;
-  --line-heigt: 1.5;
+  --line-height: 1.5;
   --border-radius: 1.4rem;
+  --border-error: 1px solid #FF0000;
 }
 
 *, 
@@ -30,7 +31,7 @@ body {
   min-width: 320px;
   font-family: 'Roboto', sans-serif;
   margin: 0;
-  line-height: var(--line-heigt);
+  line-height: var(--line-height);
 }
 
 ul {
@@ -82,10 +83,22 @@ ul {
   font-size: 1.14rem;
 }
 
+.empty-result {
+  display: none;
+}
+
+.error-message,
+.error-not-match,
+.error-empty,
+.error-login,
+.empty-result {
+  display: none;
+  color: #FF0000;
+}
+
 .btn {
   padding: 0 1rem;
   width: auto;
-  height: 1.7rem;
   background-color: var(--btn-color);
   border-radius: var(--border-radius);
   border-style: none;
@@ -93,14 +106,14 @@ ul {
   color: var(--text-color); 
   font-size: 1.07rem;
   font-weight: bold;
-  line-height: var(--line-heigt);
+  line-height: var(--line-height);
   box-shadow: 0 .28rem .57rem 0 rgba(0,0,0,0.2);
   transition: 0.3s;
 }
 
 .btn:hover {
-  transform: scale(1.1);
-  box-shadow: var(--shadow-hover);
+  text-shadow: 0 0 6px rgba(255, 255, 255, 1);
+  transition: all 0.4s ease 0s;
 }
 
 .main .container{
@@ -157,6 +170,7 @@ ul {
 }
 
 .main__filter label{
+  margin-right: .2rem;
   font-weight: normal;
   font-size: 1.14rem;
   line-height: 1.4;
@@ -167,11 +181,12 @@ ul {
 }
 
 .main__filter-text {
-  width: 40%;
+  width: 38%;
 }
 
 .main__filter-date {
-  width: 31%;
+  margin-right: .3rem;
+  width: 41%;
 }
 
 .main__filter button {
@@ -200,11 +215,13 @@ ul {
   padding: 0 1rem;
   overflow-y: auto;
   width: 100%;
+  max-width: 35rem;;
   height: 43rem;
 }
 
 .message__container {
   display: flex;
+  justify-content: space-between;
   padding: .5rem 1rem;
   margin: 0;
   box-shadow: 0 .28rem .57rem 0 rgba(0,0,0,0.2);
@@ -215,6 +232,7 @@ ul {
 }
 
 .message-chat .user-message {
+  border: 2px solid #89efbf;
   background-color: white;
 }
 
@@ -237,7 +255,7 @@ ul {
 
 .users-list__main {
   display: block;
-  height: 100%;
+  height: 96%;
   background: rgba(196, 196, 196, 0.4);
 }
 
@@ -273,11 +291,12 @@ ul {
 
 .messages-container {
   padding: 0 3.6rem;
+  display: flex;
+  flex-direction: column;
 }
 
-.btn-add-messages {
-  position: relative;
-  left: 40%;
+.btn-load-messages {
+  align-self: center;
 }
 
 .message-chat__info {
@@ -308,31 +327,22 @@ ul {
 
 .user-message__change {
   display: flex;
-  /*justify-content: space-between;*/
   justify-content: flex-end;
 } 
 
 .btn-edit,
 .btn-delete {
-  padding: 0;
   border: 0;
   background-color: transparent;
 }
 
-.btn-edit .iconify,
-.btn-delete .iconify {
-  width: 20px;
-  height: 20px;
-  color: var(--blue-color);
-  cursor: pointer;
+.icon-edit,
+.icon-delete {
+  color: var(--btn-color);
 }
 
-.btn-edit {
-  padding-left: .5rem;
-}
-
-.btn-edit:hover,
-.btn-delete:hover,
+.icon-edit:hover,
+.icon-delete:hover,
 .btn-icon-users:hover,
 .btn-icon-filter:hover {
   transform: scale(1.1);
@@ -360,8 +370,9 @@ ul {
   width: 45%;
 }
 
-.message-send input[placeholder] {
-  padding: .64rem;
+.message-send textarea[placeholder] {
+  padding-top: .5rem;
+  padding-left: .5rem;
 }
 
 .message-send__icon {
@@ -373,7 +384,7 @@ ul {
 
 .iconify {
   width: 2.2rem;
-  height: 2.2rem;
+  height: 2.6rem;
   color: var(--blue-color);
   cursor: pointer;
 }
@@ -425,6 +436,7 @@ ul {
 }
 
 @media screen and (max-width: 980px) {
+
   .messages-container {
     padding: 0 1.4rem;
   }
@@ -500,4 +512,66 @@ ul {
   .footer__email {
     margin-top: 0;
   }
+}
+
+/*Sign Up*/
+
+.back-container {
+  margin: 2rem;
+}
+
+.registration-container,
+.authorization-container {
+  display: none;
+}
+
+.registration-form-block,
+.authorization-form-block {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #89EFBF;
+  border-radius: 2rem;
+  max-width: 28rem;
+  margin: 10rem auto;
+  padding: 3rem 0;
+}
+
+.registration-form,
+.authorization-form {
+  display: flex;
+  flex-direction: column;
+  width: 17rem;
+}
+
+.form-label {
+  margin: 0;
+  color: var(--text-color);
+  font-size: 2rem;
+}
+
+.registration-input,
+.authorization-input {
+  background-color: var(--text-color);
+  padding: 1rem;
+  margin-top: .6rem;
+  border-radius: 2rem;
+  border: none;
+}
+
+.registration-button,
+.authorization-button {
+  padding: .5rem 0;
+  margin-top: 1.5rem;
+}
+
+.link {
+  color: var(--blue-color);
+  cursor: pointer;
+}
+
+.account-available {
+  margin-top: .4rem;
+  text-align: center;
 }

@@ -4,24 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="keywords" content="yoga, chat, yogachat">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css"
+  integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
   <link rel="stylesheet" href="./style.css">
   <title>YogaChat</title>
 </head>
 <body>
   
-  <header class="header" id="header">
-    <!--<div class="container">
-      <div class="header__inner">
-        <div class="header__logo">
-          <img src="./images/logo_chat.png" alt="logo" class="logo">
-        </div>
-        <div class="header__authorization" id="header__authorization">
-          <div class="name-authorization" id="name-authorization"></div>
-          <button class="btn-authorization btn" id="btn-authorization" type="button">Log Out</button>
-        </div>
-      </div>
-    </div>-->
-  </header>
+  <header class="header" id="header"></header>
 
   <main class="main" id="main">
     <div class="section-top">
@@ -40,8 +30,10 @@
           <label for="dateFilter">Date:</label>
           <input class="main__filter-date btn-filter" id="fromDateFilter" type="date" name="fromDateFilter" >
           <input class="main__filter-date btn-filter" id="toDateFilter" type="date" name="toDateFilter" >
+          <span class="empty-result">There are no results for this filter.</span>
 
           <button onsubmit="controller.showMessages(0, 10, {text, author, dateTo, dateFrom})" class="btn-filter btn" id="btn-filter" type="submit">Filter</button>
+          <button class="btn-filter btn" id="btn-reset" type="submit">Reset</button>
         </form>
         <div class="users-list__main" id="users-list__main">
           <h3 class="users-list__name">All  users</h3>
@@ -50,29 +42,27 @@
       </div>
       <div class="section-right" id="section-right">
         <div class="messages-container">
-          <button class="btn-add-messages btn">&#43 10 messages</button>
+          <button class="btn-load-messages btn" id="btn-load-messages">&#43 10 messages</button>
           <div class="messages-block" id="messages-block"></div>
-          <div class="message-send" id="message-send">
-            <!--<input class="message-send__input" type="text" placeholder="Write a message...">
-            <button type="submit" class="message-send__icon">
-              <span class="iconify" data-icon="ic-round-send" data-inline="false"></span>
-            </button>
-          </div>
-        </div>-->
+          <div class="message-send" id="message-send"></div>
+        </div>
       </div>
     </div>
   </main>
 
   <section class="registration-container" id="registration-container">
     <div class="navigation-link">
-      <div><a class="back-to-chat link" id="back-link-signup">Back to Chat</a></div>
+      <div class="back-container"><a class="back-to-chat link" id="back-link-signup">Back to Chat</a></div>
     </div>
     <div class="registration-form-block">
       <h3 class="form-label">Sign Up</h3>
-      <form class="registration-form" action="">
-        <input type="text" class="login registration-input text-input-placeholder" name="login" id="login" placeholder="Enter Login" />  
-        <input type="password" class="password registration-input text-input-placeholder" placeholder="Enter Password" />
-        <input type="password" class="retype-password registration-input text-input-placeholder" placeholder="Confirm Password" />
+      <form class="registration-form" id="registration-form" action="" method="POST">
+        <input type="text" class="login registration-input text-input-placeholder" name="sign-up-login" id="sign-up-login" placeholder="Enter Login" />  
+        <span class="error-login" id="error-login">That login is taken! Try another.</span>
+        <input type="password" class="password registration-input text-input-placeholder" id="sign-up-password" placeholder="Enter Password" />
+        <input type="password" class="retype-password registration-input text-input-placeholder" id="sign-up-confirm" placeholder="Confirm Password" />
+        <span class="error-not-match" id="error-not-match">Password and confirmation Password don't match!</span>
+        <span class="error-empty" id="error-empty">Please fill in form fields!</span>
         <button type="submit" class="registration-button btn" id="registration-button">Sign Up</button>
         <div class="account-available">Already have an account? <a class="link-sign-in link" id="link-sign-in">Sign In</a></div>
       </form>
@@ -81,45 +71,19 @@
 
   <section class="authorization-container" id="authorization-container">
     <div class="navigation-link">
-      <div><a class="back-to-chat link" id="back-link-signin">Back to Chat</a></div>
+      <div class="back-container"><a class="back-to-chat link" id="back-link-signin">Back to Chat</a></div>
     </div>
     <div class="authorization-form-block">
       <h3 class="form-label">Sign In</h3>
-      <form class="authorization-form" action="">
-        <input type="text" class="login authorization-input text-input-placeholder" name="login" id="login" placeholder="Enter Login"/>  
-        <input type="password" class="password authorization-input text-input-placeholder" placeholder="Enter Password"/>
+      <form class="authorization-form" action="" method="POST" onsubmit=" event.preventDefault(); controller.signIn(event);">
+        <input type="text" class="login authorization-input text-input-placeholder" name="sign-in-login" id="sign-in-login" placeholder="Enter Login"/>  
+        <input type="password" class="password authorization-input text-input-placeholder" id="sign-in-password" placeholder="Enter Password"/>
+        <span class="error-message" id="error-message">Incorrect Login or Password!</span>
         <button type="submit" class="authorization-button btn" id="authorization-button">Sign In</button>
         <div class="account-available">Don't have an account? <a class="link-sign-up link" id="link-sign-up">Sign Up</a></div>
       </form>
     </div>
   </section>
-
-  <!--<section class="registration-block" id="registration-block">
-    <h3 class="registration-label">Sign Up</h3>
-    <form class="registration-form" onsubmit="event.preventDefault(); controller.register(this.login.value);">
-      <input type="text" class="login reg-input text-input-placeholder" name="login" id="login" placeholder="Enter login" />  
-      <input type="password" class="password reg-input text-input-placeholder" placeholder="Enter Password" />
-      <input type="password" class="retype-password reg-input text-input-placeholder" placeholder="Confirm Password" />
-      <button type="submit-btn" class="registration-button">Sign Up</button>
-      <div class="nav-links reg-links">
-        <button type="button" class="back-button" id="back-to-chat">Back to Chat</button>
-      </div>
-    </form>
-  </section>-->
-
-  <!--<section class="autorization-block" id="autorization-block">
-  <button type="button" class="nav-button" id="back-to-chat-alt">Back to Chat</button>
-    <h3 class="autorization-label">Sign In</h3> 
-    <form class="autorization-form" action="">
-      <input type="text" class="login auto-input text-input-placeholder" name="login" id="login" placeholder="Enter login" />  
-      <input type="password" class="password auto-input text-input-placeholder" placeholder="Пароль" />
-      <span class="auto-error-message" id="auto-error-message">Incorrect Login or Password.</span>
-      <button type="submit" class="autorization-button" id="autorization-button">Sign In</button>
-      <div class="nav-links auto-links">
-        <button type="button" class="nav-button" id="reg-button">Don't have an account? Sign Up</button>
-      </div>
-    </form>
-  </section>-->
 
   <footer class="footer">
     <div class="container">
@@ -136,7 +100,8 @@
     </div>
   </footer>
 
-  <script src="https://code.iconify.design/1/1.0.7/iconify.min.js"></script>
-  <script src="./script.js"></script>
+<script src="./script.js"></script>
+<!--<script src="./script2.js"></script>-->
+<script src="https://code.iconify.design/1/1.0.7/iconify.min.js"></script>
 </body>
 </html>
