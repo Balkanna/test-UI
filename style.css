@@ -6,6 +6,7 @@
   --header-footer-color: #19C39F;
   --line-height: 1.5;
   --border-radius: 1.4rem;
+  --border-error: 1px solid #FF0000;
 }
 
 *, 
@@ -82,7 +83,15 @@ ul {
   font-size: 1.14rem;
 }
 
-.error-message {
+.empty-result {
+  display: none;
+}
+
+.error-message,
+.error-not-match,
+.error-empty,
+.error-login,
+.empty-result {
   display: none;
   color: #FF0000;
 }
@@ -103,8 +112,8 @@ ul {
 }
 
 .btn:hover {
-  transform: scale(1.1);
-  box-shadow: var(--shadow-hover);
+  text-shadow: 0 0 6px rgba(255, 255, 255, 1);
+  transition: all 0.4s ease 0s;
 }
 
 .main .container{
@@ -161,6 +170,7 @@ ul {
 }
 
 .main__filter label{
+  margin-right: .2rem;
   font-weight: normal;
   font-size: 1.14rem;
   line-height: 1.4;
@@ -171,11 +181,12 @@ ul {
 }
 
 .main__filter-text {
-  width: 40%;
+  width: 38%;
 }
 
 .main__filter-date {
-  width: 31%;
+  margin-right: .3rem;
+  width: 41%;
 }
 
 .main__filter button {
@@ -210,6 +221,7 @@ ul {
 
 .message__container {
   display: flex;
+  justify-content: space-between;
   padding: .5rem 1rem;
   margin: 0;
   box-shadow: 0 .28rem .57rem 0 rgba(0,0,0,0.2);

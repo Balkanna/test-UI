@@ -30,8 +30,10 @@
           <label for="dateFilter">Date:</label>
           <input class="main__filter-date btn-filter" id="fromDateFilter" type="date" name="fromDateFilter" >
           <input class="main__filter-date btn-filter" id="toDateFilter" type="date" name="toDateFilter" >
+          <span class="empty-result">There are no results for this filter.</span>
 
           <button onsubmit="controller.showMessages(0, 10, {text, author, dateTo, dateFrom})" class="btn-filter btn" id="btn-filter" type="submit">Filter</button>
+          <button class="btn-filter btn" id="btn-reset" type="submit">Reset</button>
         </form>
         <div class="users-list__main" id="users-list__main">
           <h3 class="users-list__name">All  users</h3>
@@ -54,10 +56,13 @@
     </div>
     <div class="registration-form-block">
       <h3 class="form-label">Sign Up</h3>
-      <form class="registration-form" action="">
-        <input type="text" class="login registration-input text-input-placeholder" name="sign-up" id="sign-up" placeholder="Enter Login" />  
-        <input type="password" class="password registration-input text-input-placeholder" placeholder="Enter Password" />
-        <input type="password" class="retype-password registration-input text-input-placeholder" placeholder="Confirm Password" />
+      <form class="registration-form" id="registration-form" action="" method="POST">
+        <input type="text" class="login registration-input text-input-placeholder" name="sign-up-login" id="sign-up-login" placeholder="Enter Login" />  
+        <span class="error-login" id="error-login">That login is taken! Try another.</span>
+        <input type="password" class="password registration-input text-input-placeholder" id="sign-up-password" placeholder="Enter Password" />
+        <input type="password" class="retype-password registration-input text-input-placeholder" id="sign-up-confirm" placeholder="Confirm Password" />
+        <span class="error-not-match" id="error-not-match">Password and confirmation Password don't match!</span>
+        <span class="error-empty" id="error-empty">Please fill in form fields!</span>
         <button type="submit" class="registration-button btn" id="registration-button">Sign Up</button>
         <div class="account-available">Already have an account? <a class="link-sign-in link" id="link-sign-in">Sign In</a></div>
       </form>
@@ -70,12 +75,12 @@
     </div>
     <div class="authorization-form-block">
       <h3 class="form-label">Sign In</h3>
-      <form class="authorization-form" action="">
-        <input type="text" class="login authorization-input text-input-placeholder" name="sign-in" id="sign-in" placeholder="Enter Login"/>  
-        <input type="password" class="password authorization-input text-input-placeholder" placeholder="Enter Password"/>
+      <form class="authorization-form" action="" method="POST" onsubmit=" event.preventDefault(); controller.signIn(event);">
+        <input type="text" class="login authorization-input text-input-placeholder" name="sign-in-login" id="sign-in-login" placeholder="Enter Login"/>  
+        <input type="password" class="password authorization-input text-input-placeholder" id="sign-in-password" placeholder="Enter Password"/>
+        <span class="error-message" id="error-message">Incorrect Login or Password!</span>
         <button type="submit" class="authorization-button btn" id="authorization-button">Sign In</button>
         <div class="account-available">Don't have an account? <a class="link-sign-up link" id="link-sign-up">Sign Up</a></div>
-        <span class="error-message" id="error-message">Incorrect Login or Password!</span>
       </form>
     </div>
   </section>
@@ -95,7 +100,8 @@
     </div>
   </footer>
 
-  <script src="https://code.iconify.design/1/1.0.7/iconify.min.js"></script>
-  <script src="./script.js"></script>
+<script src="./script.js"></script>
+<!--<script src="./script2.js"></script>-->
+<script src="https://code.iconify.design/1/1.0.7/iconify.min.js"></script>
 </body>
 </html>
