@@ -59,6 +59,12 @@ class Message {
   set isPersonal(value) {
     this._isPersonal = value;
   }
+
+  //TODO
+  editMessage(text, to) {
+    this.to = to;
+    this.text = text;
+  }
 }
 
 class MessageList {
@@ -290,7 +296,7 @@ class MessagesView {
             <div class="message__text">${msg.text}</div>
             ${msg.author === messageList.user ? 
             `<div class="user-message__change" id="user-message__change">
-              <button class="btn-edit" id="btn-edit" title="Edit"><i class="fas fa-pencil-alt icon-edit"></i></button>
+              <button class="btn-edit" id="btn-edit" title="Edit" data-message-id="${msg.id}" onclick="controller.editMessage(this)"><i class="fas fa-pencil-alt icon-edit"></i></button>
               <button class="btn-delete" id="btn-delete" onclick="controller.removeMessage(${msg.id})" title="Delete"><i class="fas fa-trash-alt icon-delete" id="icon-delete"></i></button>
             </div>` : ''}
           </div>
@@ -313,14 +319,15 @@ class ChatController {
     const btnRegistrationForm = document.getElementById('registration-form');
     btnRegistrationForm.addEventListener('submit', this.signUp);
     const btnAuthorizationForm = document.getElementById('authorization-form');
+ 
     //btnAuthorizationForm.addEventListener('submit', this.signIn);
     // this.signUpLogin = document.getElementById('sign-up-login'); 
     // this.signUpPassword = document.getElementById('sign-up-password'); 
     // this.confirmPassword = document.getElementById('sign-up-confirm'); 
     // this.signUpAction = document.getElementById('registration-button');
 
-    // this.messageText = document.querySelector('#message-send__input');
-    // this.messageSubmit = document.querySelector('#message-send__icon');
+    this.messageText = document.querySelector('#message-send__input');
+    this.messageSubmit = document.querySelector('#message-send__icon');
     // this.msg = {};
   }
 
@@ -349,9 +356,7 @@ class ChatController {
   addMessage(msg) {
     if (messageList.add(msg)) {
       this.showMessages(0, 10);
-      return true
     }
-    return false;
   }
 
   removeMessage(id) {
@@ -362,57 +367,49 @@ class ChatController {
     }
   }
 
-  editMessage(id, msg) {
+  /*editMessage(id, msg) {
     console.log('Click edit');
-    
-    if(messageList.edit(id.toString(), msg)) {
-      this.messagesView.display(messageList.getPage());
+    messageList.edit(id.toString(), msg);
+    this.messagesView.display(messageList.getPage());
     messageList.save();
+  }*/
+
+  editMessage(elem) {
+    const id = elem.dataset.messageId;
+    console.log(elem.dataset.messageId); 
+
+    //this.messageSubmit.onclick = null;
+    //document.getElementById('form-send-message').onsubmit = null;
+    //const usersNode = document.getElementById('users');
+
+    let editedMsg = messageList.messages.find(msg => msg.id === id.toString()); 
+    console.log(editedMsg);
+    /*this.messageText*/document.querySelector('#message-send__input').value = editedMsg.text;
+    console.log(editedMsg);
+    /*if (editedMsg.isPersonal) {
+      this.displayTo.innerHTML = editedMsg.to;
+    }
+    
+    usersNode.addEventListener('click', (event) => {
+      this.displayTo.innerHTML = event.target.textContent;
+      this.msg.to = event.target.textContent;
+      console.log('Choose whom: ', this.msg.to);
+    });*/
+
+    document.getElementById('form-send-message').onsubmit = () => {
+      //this.msg.to = this.displayTo.innerHTML;
+      msg.text = document.querySelector('#message-send__input').value;
+      console.log('Ready to edit', msg);
+      if (messageList.edit(id.toString(), msg)) {
+        this.messageView.display(messageList.getPage(), messageList.user);
+        document.querySelector('#message-send__input').value = '';
+        messageList.save();
+        //localStorage.setItem('messages', JSON.stringify(this.messages));
+      }
+      this.messageSubmit.onsubmit = addItem;
     }
     
   }
-  /*editMessage(e) {
-    const id = e.dataset.messageId;
-    console.log(e.dataset['messageId']); 
-    console.log(e.dataset.messageId); 
-
-    // this.messageSubmit.onclick = null;
-    // const usersNode = document.getElementById('users');
-
-    let editedMsg = this._messages.find(item => item.id === id.toString()); 
-    console.log(editedMsg);
-    this.messageText.value = editedMsg.text;
-    // /if (editedMsg.isPersonal) {
-    //   this.displayTo.innerHTML = editedMsg.to;
-    // }
-    
-    // usersNode.addEventListener('click', (event) => {
-    //   this.displayTo.innerHTML = event.target.textContent;
-    //   this.msg.to = event.target.textContent;
-    //   console.log('Choose whom: ', this.msg.to);
-    // });
-
-    this.messageSubmit.onclick = () => {
-      //this.msg.to = this.displayTo.innerHTML;
-      this.msg.text = this.messageText.value;
-      // if (!this.msg.to || this.msg.to === 'TO ALL') {
-      //   this.msg.isPersonal = false;
-      //   this.msg.to = '';
-      // }
-      // else {
-      //   this.msg.isPersonal = true;
-      //   this.msg.to = this.displayTo.innerHTML;
-      // }
-      // console.log('Ready to edit', this.msg);
-      if (this.messageList.edit(id.toString(), this.msg)) {
-        this.messageView.display(this.messageList.getPage(), this.messageList.user);
-        this.messageText.value = '';
-        //this.displayTo.innerHTML = '';
-        localStorage.setItem('messages', JSON.stringify(this.messages));
-        
-      }
-      this.messageSubmit.onclick = this.addItem;
-    }*/
 
 
   moveToLoginPage() {
@@ -431,21 +428,20 @@ class ChatController {
   defaultPage() {
     this.showMessages(0, 10);
     document.getElementById('registration-container').style.display = "none";
+    document.getElementById('authorization-container').style.display = "none";
     document.getElementById('main').style.display = "block";
   }
 
   returnToChatPage() {
-    document.getElementById('registration-container').style.display = "none";
-    document.getElementById('authorization-container').style.display = "none";
-    document.getElementById('main').style.display = "block";
+    controller.defaultPage();
     btnSignInHeader.style.display = "block";
   }
 
   returnToChatPage2() {
     controller.setCurrentUser();
-    document.getElementById('main').style.display = "block";
+    controller.defaultPage();
     controller.showMessages(0, 10);
-    controller.moveToRegistrationPage();
+    //controller.moveToRegistrationPage();
     console.log('Click: back!');
   }
 
@@ -488,10 +484,12 @@ class ChatController {
   };
 
   sendMessage(msg) {
-    let newMessageText = document.querySelector('#message-send__input').value;
-    this.addMessage({ author: this.user, text: newMessageText, isPersonal: false });
+    let messageField = document.querySelector('#message-send__input');
+    let messageText = messageField.value;
+    this.addMessage({ author: this.user, text: messageField.value, isPersonal: false });
     if (this.addMessage(msg)) {
-      document.querySelector('#message-send__input').value = '';
+      //messageText = '';
+      messageField.value= '';
     }
     console.log('Click: add new message!');
     console.log(MessageList.validate(msg)); //TODO false
@@ -578,6 +576,7 @@ class ChatController {
 
       if (values[0].password === signInPassword.value) {
         console.log('It is match!');
+        document.getElementById('authorization-container').style.display = "none";
         this.user = signInLogin.value;
         this.setCurrentUser(this.user);
         this.defaultPage();
@@ -818,10 +817,8 @@ linkBackToChat.addEventListener('click', controller.returnToChatPage);
 const linkBackToChat2 = document.getElementById("back-link-signup");
 linkBackToChat2.addEventListener('click', controller.returnToChatPage);
 
-const btnEdit = document.getElementById("btn-edit");
-btnEdit.addEventListener('click', () => {controller.editMessage()});  
-
-
+// const btnEdit = document.getElementById("btn-edit");
+// btnEdit.addEventListener('click', () => {controller.editMessage()});  
 
 
 /*const userList = new UserList(['Alexander', 'Alice', 'Elon', 'Max','Tom', 'Natasha'], ['Alexander', 'Alice', 'Elon', 'Max','Tom']);
